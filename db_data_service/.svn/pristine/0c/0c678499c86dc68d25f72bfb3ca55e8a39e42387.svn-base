@@ -1,0 +1,67 @@
+{
+  "requestParamMap":[
+    {
+      "orionProduct": {
+        "serviceName": "OrionProductService",
+        "className": "\\DBService\\Business\\OrionBasicService",
+        "functionName": "getValidProductInfo"
+      }
+    },
+    {
+      "accountInfo": {
+        "serviceName": "OrionProductService",
+        "className": "\\DBService\\Business\\OrionBasicService",
+        "functionName": "getAccountsByProductId"
+      }
+    },
+    {
+      "userInfo": {
+        "serviceName": "QueryUserService",
+        "className": "\\DBService\\Business\\UserBasicService",
+        "functionName": "getUserData"
+      }
+    },
+    {
+      "userInfoById": {
+        "serviceName": "QueryUserService",
+        "className": "\\DBService\\Business\\UserBasicService",
+        "functionName": "getUserById"
+      }
+    },
+    {
+      "insertTask": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+        "functionName": "insertDuplicateTask"
+      }
+    },
+    {
+      "selectTaskByUserId": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+        "functionName": "selectTaskByUserId"
+      }
+    },
+    {
+      "selectTaskByStatus": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+        "functionName": "selectTaskByStatus"
+      }
+    },
+    {
+      "selectTaskAll": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+        "functionName": "selectTaskAll"
+      }
+    },
+    {
+      "updateTask": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+        "functionName": "updateDuplicateTask"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2017/12/26
+ * Time: 上午9:52
+ */
+
+namespace FBBasicService\Facade;
+
+
+class AdsetFacade
+{
+
+}

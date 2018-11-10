@@ -1,0 +1,14 @@
+<?php
+
+namespace FBBasicService\Constant;
+
+class FBParamConstant
+{
+    const QUERY_PARAM_LIMIT = 'limit';
+
+    const ADIMAGE_PARAM_HASHES = 'hashes';
+    const TIME_RANGE_SINCE = 'since';
+    const TIME_RANGE_UNTIL = 'until';
+
+    const AD_USER_DES_DEFAULT = 'me';
+}

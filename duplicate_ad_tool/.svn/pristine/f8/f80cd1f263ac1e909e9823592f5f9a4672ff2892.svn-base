@@ -1,0 +1,310 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/6
+ * Time: 下午2:32
+ */
+
+namespace DuplicateAd\Business;
+
+
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Helper\CommonHelper;
+use CommonMoudle\Logger\ServerLogger;
+use DuplicateAd\Constant\DACommonConstant;
+use DuplicateAd\Constant\DAResponseField;
+use DuplicateAd\Constant\FBFieldConstant;
+use DuplicateAd\FBManager\FBServiceFacade;
+
+abstract class AbstractCopyHelper
+{
+    protected $materialTextMap;
+    protected $originalTextInfo;
+    protected $materialInfos;
+
+    private $temAdsetId;
+    protected $temAdsetName;
+    private $toCampaignId;
+    protected $toAccountId;
+    private $temAdsetFields;
+    protected $temCreativeFields;
+
+    private $adType;
+
+    public function __construct($textInfo=array())
+    {
+        $this->originalTextInfo = $textInfo;
+        if(empty($textInfo))
+        {
+            $this->materialTextMap = array();
+        }
+        else
+        {
+            $this->materialTextMap = $this->constructTextMap();
+        }
+
+        $this->reset(true);
+    }
+
+    private function reset($isResetMaterial=false)
+    {
+        $this->temAdsetId = '';
+        $this->temAdsetName = '';
+        $this->temAdsetFields = array();
+        $this->toAccountId = '';
+        $this->toCampaignId = '';
+        $this->temCreativeFields = array();
+        if($isResetMaterial)
+        {
+            $this->materialInfos = array();
+        }
+        $this->subReset();
+    }
+
+    public function init($adsetId, $adId, $isClearMaterial=false)
+    {
+        $this->reset($isClearMaterial);
+
+        $adsetInfo= FBServiceFacade::getAdsetAllField($adsetId);
+        if(empty($adsetInfo))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'Failed to get adset fields by id: ' . $adsetId);
+            return false;
+        }
+
+        $this->temAdsetId = $adsetId;
+        $this->temAdsetName = $adsetInfo[FBFieldConstant::ADSET_NAME];
+        $this->toCampaignId = $adsetInfo[FBFieldConstant::ADSET_CAMPAIGN_ID];
+        $this->toAccountId = FBFieldConstant::ACCOUNT_ID_PREFIX . $adsetInfo[FBFieldConstant::ADSET_ACCOUNT_ID];
+        $this->temAdsetFields = CommonHelper::filterMapByKeys($adsetInfo, self::$adsetFields);
+
+
+        $creativeInfo = FBServiceFacade::getCreativeField($adId);
+        $this->temCreativeFields = CommonHelper::filterMapByKeys($creativeInfo, self::$creativeFields);
+
+        $this->subInit();
+    }
+
+    public function uploadMaterial($materialPath)
+    {
+        $this->materialInfos = $this->getUploadMaterial($this->toAccountId, $materialPath);
+    }
+
+    public function waitMaterialReady()
+    {
+        switch ($this->adType)
+        {
+            case DACommonConstant::AD_TYPE_SINGLE_IMAGE:
+            case DACommonConstant::AD_TYPE_CAROUSEL_IMAGE:
+                sleep(10);
+                break;
+
+            case DACommonConstant::AD_TYPE_SINGLE_VIDEO:
+            case DACommonConstant::AD_TYPE_CAROUSEL_VIDEO:
+                sleep(120);
+                break;
+            default:
+                break;
+        }
+    }
+
+    protected function duplicateAdset($adsetName)
+    {
+        if(empty($this->toAccountId))
+        {
+            return $this->duplicateAdsetByField($adsetName);
+        }
+        else
+        {
+            return $this->duplicateAdsetByCopy($adsetName);
+        }
+    }
+
+    private function duplicateAdsetByCopy($adsetName)
+    {
+        $adsetId = FBServiceFacade::copyAdsetByCopyAPI($this->temAdsetId, $adsetName, $this->toCampaignId);
+        return $adsetId;
+    }
+
+    private function duplicateAdsetByField($adsetName='')
+    {
+        $adsetFields = $this->temAdsetFields;
+        if(!empty($adsetName))
+        {
+            $adsetFields[FBFieldConstant::ADSET_NAME] = $adsetName;
+        }
+
+        if(!empty($this->toCampaignId))
+        {
+            $adsetFields[FBFieldConstant::ADSET_CAMPAIGN_ID] = $this->toCampaignId;
+        }
+
+        $adsetId = FBServiceFacade::copyAdsetByFields($this->toAccountId, $adsetFields);
+
+        return $adsetId;
+    }
+
+    protected function formatAdsetName($oldName, $materialName)
+    {
+        $currentTime = date('Ymd_Hi');
+
+        $pattern = '/(\d{6,8}_\d{3,4})/';
+        $replaceDate = preg_replace($pattern, $currentTime, $oldName);
+        if ($replaceDate == $oldName)
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_WARNING, 'Can not find date or same date.');
+        }
+
+        $pos = strrpos($replaceDate, '_');
+        if (false === $pos) {
+            $pos = strlen($replaceDate);
+        }
+
+        $subName = substr($replaceDate, 0, $pos);
+        $newName = $subName . '_' . $materialName;
+        return $newName;
+    }
+
+    protected function uploadImageOperation($accountId, $materialPath)
+    {
+        $imageInfo = FBServiceFacade::uploadImage($accountId, $materialPath);
+        $imageList = CommonHelper::getArrayValueByKey(DAResponseField::IMAGE_DATA, $imageInfo);
+//        $failedList = CommonHelper::getArrayValueByKey(DAResponseField::FAILED_IMAGE_LIST, $imageInfo);
+
+        if(empty($imageList))
+        {
+            return array();
+        }
+
+        $imageMap = array();
+        foreach ($imageList as $path => $image)
+        {
+            $imageMap[$path] = $image[DAResponseField::IMAGE_HASH];
+        }
+
+        return $imageMap;
+    }
+
+    protected function uploadVideoOperation($accountId, $materialPath)
+    {
+        $videoInfo = FBServiceFacade::uploadVideo($accountId, $materialPath);
+        $videoList = CommonHelper::getArrayValueByKey(DAResponseField::VIDEO_DATA, $videoInfo);
+//        $failedList = CommonHelper::getArrayValueByKey(DAResponseField::FAILED_VIDEO_LIST, $videoInfo);
+
+        if(empty($videoList))
+        {
+            return array();
+        }
+
+        $videoMap = array();
+        foreach ($videoList as $path => $video)
+        {
+            $videoMap[$path] = $video[DAResponseField::VIDEO_ID];
+        }
+
+        return $videoMap;
+    }
+
+    public function copyAdByMaterial()
+    {
+        $this->handlerCopyAd();
+    }
+
+    protected function subReset()
+    {}
+    protected function subInit()
+    {}
+    abstract protected function constructTextMap();
+    abstract protected function getUploadMaterial($accountId, $materialPath);
+    abstract protected function handlerCopyAd();
+
+    /**
+     * @return mixed
+     */
+    public function getAdType()
+    {
+        return $this->adType;
+    }
+
+    /**
+     * @param mixed $adType
+     */
+    public function setAdType($adType)
+    {
+        $this->adType = $adType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMaterialInfos()
+    {
+        return $this->materialInfos;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getToCampaignId()
+    {
+        return $this->toCampaignId;
+    }
+
+    /**
+     * @param mixed $toCampaignId
+     */
+    public function setToCampaignId($toCampaignId)
+    {
+        $this->toCampaignId = $toCampaignId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getToAccountId()
+    {
+        return $this->toAccountId;
+    }
+
+    /**
+     * @param mixed $toAccountId
+     */
+    public function setToAccountId($toAccountId)
+    {
+        $this->toAccountId = $toAccountId;
+    }
+
+    private static $adsetFields = array(
+        FBFieldConstant::ADSET_CAMPAIGN_ID,
+        FBFieldConstant::ADSET_ATTRIBUTION_SPEC,
+        FBFieldConstant::ADSET_BID_AMOUNT,
+        FBFieldConstant::ADSET_BID_INFO,
+        FBFieldConstant::ADSET_BILLING_EVENT,
+        FBFieldConstant::ADSET_STATUS,
+        FBFieldConstant::ADSET_DAILY_BUDGET,
+        FBFieldConstant::ADSET_END_TIME,
+        FBFieldConstant::ADSET_IS_AUTOBID,
+        FBFieldConstant::ADSET_IS_AVERAGE_PRICE_PACING,
+        FBFieldConstant::ADSET_LIFETIME_BUDGET,
+        FBFieldConstant::ADSET_NAME,
+        FBFieldConstant::ADSET_OPTIMIZATION_GOAL,
+        FBFieldConstant::ADSET_PACING_TYPE,
+        FBFieldConstant::ADSET_PROMOTED_OBJECT,
+        FBFieldConstant::ADSET_START_TIME,
+        FBFieldConstant::ADSET_TARGETING,
+    );
+
+    private static $creativeFields = array(
+        FBFieldConstant::CREATIVE_BODY,
+        FBFieldConstant::CREATIVE_IMAGE_HASH,
+        FBFieldConstant::CREATIVE_NAME,
+        FBFieldConstant::CREATIVE_OBJECT_STORY_SPEC,
+        FBFieldConstant::CREATIVE_OBJECT_TYPE,
+        FBFieldConstant::CREATIVE_TITLE,
+        FBFieldConstant::CREATIVE_VIDEO_ID,
+        FBFieldConstant::CREATIVE_CALL_TO_ACTION,
+        FBFieldConstant::CREATIVE_INSTAGRAM_ACTOR_ID,
+        FBFieldConstant::CREATIVE_INSTAGRAM_PERMALINK_URL,
+    );
+}

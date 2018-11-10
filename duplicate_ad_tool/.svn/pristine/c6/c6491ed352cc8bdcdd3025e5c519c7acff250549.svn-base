@@ -1,0 +1,216 @@
+<?php
+namespace DuplicateAd\Business;
+
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Helper\CommonHelper;
+use CommonMoudle\Helper\ExcelFileHelper;
+use CommonMoudle\Helper\JsonFileHelper;
+use CommonMoudle\Logger\ServerLogger;
+use DuplicateAd\Constant\ConfConstant;
+use DuplicateAd\FBManager\FBServiceFacade;
+
+class DuplicateHandler
+{
+    private $rootPath;
+
+    private $jsonFileName;
+
+    private $configInfo;
+
+    protected $textInfo;
+
+    private $helperFactory;
+
+    private $processLog;
+
+    public function __construct($unzipPath, $jsonFile)
+    {
+        $this->rootPath = $unzipPath;
+        $this->jsonFileName = $jsonFile;
+        $this->parseConfig();
+
+        $this->helperFactory = new CopyHelperFactory($this->textInfo);
+
+        $this->processLog='';
+    }
+
+    public function duplicateAd()
+    {
+        $this->processLog ='-------------Duplicate Start-------------' . '<br/>';
+        if(empty($this->configInfo))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'The configList is empty.');
+            $this->processLog .= 'The format of json file is wrong!!!' . '<br/>';
+            return $this->processLog;
+        }
+
+        foreach($this->configInfo as $config)
+        {
+            $isShareMaterial = CommonHelper::getArrayValueByKey(ConfConstant::CONF_SHARE, $config);
+            if(is_null($isShareMaterial))
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_WARNING,
+                    'The isShareMaterial is null of config: ' . print_r($config, true));
+                $this->processLog .= 'The config item isShareMaterial is wrong!!!' . '<br/>';
+                continue;
+            }
+
+            $adsetId = CommonHelper::getArrayValueByKey(ConfConstant::CONF_ADSET_ID, $config);
+            if(empty($adsetId))
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_WARNING,
+                    'The fromAdsetId is empty of config: ' . print_r($config, true));
+                $this->processLog .= 'The config item fromAdsetId is empty !!!' . '<br/>';
+                continue;
+            }
+
+            $confAdId = CommonHelper::getArrayValueByKey(ConfConstant::CONF_AD_ID, $config);
+            $adId = $this->getAdId($adsetId, $confAdId);
+            if(empty($adId))
+            {
+                $this->processLog .= 'Failed to get adId by adsetId: ' . $adsetId . '<br/>';
+                continue;
+            }
+
+            $this->processLog .= '++++++start copy ad by adsetId: ' . $adsetId . ', adId: ' . $adId . ' +++++++' . '<br/>';
+            $copyHelper = $this->initCopyHelper($adsetId, $adId, $isShareMaterial, $config);
+            if(empty($copyHelper))
+            {
+                $this->processLog .= 'Failed to init copy!!!' . '<br/>';
+                continue;
+            }
+
+            $materialPath = CommonHelper::getArrayValueByKey(ConfConstant::CONF_MATERIAL_PATH, $config);
+            if(empty($materialPath) && !$isShareMaterial)
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_WARNING,
+                    'The material path is empty: ' . print_r($config, true));
+                $this->processLog .= 'The config item materialPath is empty!!!' . '<br/>';
+                continue;
+            }
+
+            if(!$isShareMaterial)
+            {
+                $fullMaterialPath = $this->rootPath . DIRECTORY_SEPARATOR . $materialPath;
+                if(!is_dir($fullMaterialPath))
+                {
+                    ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'The material path is invalid: ' . $fullMaterialPath);
+                    $this->processLog .= 'The material path is invalid:  ' . $fullMaterialPath . '<br/>';
+                    continue;
+                }
+
+                $this->processLog .= 'Start upload material .......' . '<br/>';
+                $copyHelper->uploadMaterial($fullMaterialPath);
+
+                if(empty($copyHelper->getFailedMaterialList()))
+                {
+                    $this->processLog .= 'Success to upload material.' . '<br/>';
+                }
+                else
+                {
+                    $this->processLog .= 'Failed upload file list: ' . print_r($copyHelper->getFailedMaterialList(), true) . '<br/>';
+                }
+            }
+
+            if(empty($copyHelper->getMaterialInfos()))
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'The material info is empty.');
+                continue;
+            }
+
+            if(!$isShareMaterial)
+            {
+                $copyHelper->waitMaterialReady();
+            }
+
+            $copyHelper->copyAdByMaterial();
+
+            if(empty($copyHelper->getFailedCopyNameList()))
+            {
+                $this->processLog .= '++++++++Succeed to copy ad+++++++++' . '<br/>';
+            }
+            else
+            {
+                $this->processLog .= '++++++++Failed copy material name: ' . print_r($copyHelper->getFailedCopyNameList(), true) . '<br/>';
+            }
+        }
+
+        return $this->processLog;
+    }
+
+    private function initCopyHelper($adsetId, $adId, $isShareMaterial, $config)
+    {
+        $adType = FBServiceFacade::getAdType($adId);
+        $copyHelper = $this->helperFactory->getHelperByAdType($adType);
+        if(empty($copyHelper))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'Failed to get copyHelper by adType: ' . $adType);
+            return false;
+        }
+        $copyHelper->init($adsetId, $adId, !$isShareMaterial);
+        $copyHelper->setAdType($adType);
+
+        $toCampaignId = CommonHelper::getArrayValueByKey(ConfConstant::CONF_CAMPAIGN_ID, $config);
+        $toAccountId = CommonHelper::getArrayValueByKey(ConfConstant::CONF_ACCOUNT_ID, $config);
+        if(!empty($toCampaignId))
+        {
+            $copyHelper->setToCampaignId($toCampaignId);
+        }
+        if(!empty($toAccountId))
+        {
+            $copyHelper->setToAccountId($toAccountId);
+        }
+
+        return $copyHelper;
+    }
+
+    private function getAdId($adsetId, $adId)
+    {
+        if(!empty($adId))
+        {
+            return $adId;
+        }
+
+        $firstAdId = FBServiceFacade::getFirstAdId($adsetId);
+        if(empty($firstAdId))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'Failed to get first ad in adset: ' . $adsetId);
+            return false;
+        }
+
+        return $firstAdId;
+    }
+
+    private function parseConfig()
+    {
+        $jsonFile = $this->rootPath . DIRECTORY_SEPARATOR . $this->jsonFileName;
+        $fileContent = JsonFileHelper::readJsonFile($jsonFile);
+        if(empty($fileContent))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'Failed to read json file: ' . $jsonFile);
+            $this->configInfo = array();
+        }
+        else
+        {
+            $this->configInfo = CommonHelper::getArrayValueByKey(ConfConstant::CONF_LIST, $fileContent);
+        }
+
+        $this->parseText($fileContent);
+    }
+
+    private function parseText($fileContent)
+    {
+        $excelFileName = CommonHelper::getArrayValueByKey(ConfConstant::CONF_TEXT_PATH, $fileContent);
+        $this->textInfo = array();
+        if(!empty($excelFileName))
+        {
+            $excelFile = $this->rootPath . DIRECTORY_SEPARATOR . $excelFileName;
+            if(is_file($excelFile))
+            {
+                $excelInfo = ExcelFileHelper::readExcelFile($excelFile);
+                array_shift($excelInfo);
+                $this->textInfo = $excelInfo;
+            }
+        }
+    }
+}

@@ -1,0 +1,141 @@
+<?php
+namespace CommonMoudle\Logger;
+
+use CommonMoudle\Helper\JsonFileHelper;
+use CommonMoudle\Constant\LogConstant;
+
+
+class ServerLogger
+{
+    private static $instance = null;
+
+    private $loggerMap;
+
+    private $filePath;
+
+    private $function;
+
+    private $line;
+
+    private $exceptionMessagePrefix;
+
+    private $currentModuleName;
+
+    private function __construct()
+    {
+        $this->filePath = '';
+        $this->function = '';
+        $this->line = '';
+        $this->exceptionMessagePrefix = '';
+        $this->currentModuleName = LogConstant::LOGGER_TYPE_VALUE_DEFAULT;
+
+        //缺省配置文件
+        $defaultLogFile = PathManager::instance()->getDefaultLogConfigPath();
+        $this->initLogger($defaultLogFile);
+    }
+
+    public static function instance()
+    {
+        if(is_null(static::$instance))
+        {
+            static::$instance = new static();
+        }
+
+        return static::$instance;
+    }
+
+    public function initLogger($logConfFile)
+    {
+        $this->buildLoggerMap($logConfFile);
+    }
+
+    public function setLoggerModule($moduleName)
+    {
+        $this->currentModuleName = $moduleName;
+    }
+
+    private function buildLoggerMap($logConfigFile)
+    {
+        $loggerConfig = $this->parseLoggerConf($logConfigFile);
+        $this->loggerMap = array();
+        foreach ($loggerConfig as $moduleName=>$confInfo)
+        {
+            $logger = new BasicLog($confInfo);
+            $this->loggerMap[$moduleName] = $logger;
+        }
+    }
+
+    public function getLogger()
+    {
+        if(array_key_exists($this->currentModuleName, $this->loggerMap))
+        {
+            return $this->loggerMap[$this->currentModuleName];
+        }
+        else
+        {
+            return $this->loggerMap[LogConstant::LOGGER_TYPE_VALUE_DEFAULT];
+        }
+    }
+
+    public function writeLog($logLevel, $logMessage)
+    {
+        $this->getCallerInfo();
+        $this->getLogger()->writeLog($logLevel, basename($this->filePath), $this->function, $this->line, $logMessage);
+    }
+
+    public function writeExceptionLog($logLevel, \Exception $e)
+    {
+        $this->exceptionMessagePrefix = '';
+        $this->writeExceptionLogUnit($logLevel, $e);
+    }
+
+    private function writeExceptionLogUnit($logLevel, \Exception $e)
+    {
+        $this->getCallerInfo();
+
+        $message = $this->exceptionMessagePrefix;
+        $message .= 'Exception Info : ';
+        $message .= $e->getMessage();
+        $message .= ' ; ';
+        $message .= $e->getCode();
+        $message .= ' ; ';
+        $message .= $e->getFile();
+        $message .= ' ; ';
+        $message .= $e->getLine();
+
+        $message .= $this->appendOtherExceptionMessage($e);
+        $this->getLogger()->writeLog($logLevel, basename($this->filePath), $this->function, $this->line, $message);
+
+    }
+
+    protected function appendOtherExceptionMessage(\Exception $e)
+    {
+        $message = '';
+        return $message;
+    }
+
+    private function getCallerInfo()
+    {
+        $traceInfoArray = debug_backtrace();
+        //直接获取有用堆栈信息
+        $loginfo = $traceInfoArray[2];
+        unset($traceInfoArray);
+        $this->filePath = $loginfo['file'];
+        $this->function = $loginfo['function'];
+        $this->line = $loginfo['line'];
+    }
+
+    private function parseLoggerConf($logConfigFile)
+    {
+        $configInfo = JsonFileHelper::readJsonFile($logConfigFile);
+        $infoList = $configInfo[LogConstant::LOGGER_CONF_FIELD_LIST];
+        $loggerConfig = array();
+        foreach ($infoList as $info)
+        {
+            $moduleName = $info[LogConstant::LOGGER_CONF_FIELD_MODULE];
+            $loggerConfig[$moduleName] = $info;
+        }
+        return $loggerConfig;
+    }
+
+}

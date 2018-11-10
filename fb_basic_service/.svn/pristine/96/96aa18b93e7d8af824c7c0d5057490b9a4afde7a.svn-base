@@ -1,0 +1,31 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/25
+ * Time: 下午9:30
+ */
+
+namespace FBBasicService\Constant\ServiceConstant;
+
+
+class ResponseDataField
+{
+    const ACCOUNT_NAME = 'accountName';
+    const SPEND_CAP = 'spendCap';
+    const SPEND_AMOUNT = 'spendAmount';
+
+    const INSIGHT_DATA = 'insightData';
+
+    const AD_TYPE = 'adType';
+
+    const FIRST_AD_ID = 'firstAdId';
+    const ADSET_ALL_FIELD = 'adsetAllField';
+    const CREATIVE_ALL_FIELD = 'creativeAllField';
+
+    const FAILED_VIDEO = 'failedVideo';
+    const SUCCESS_VIDEO = 'videoData';
+
+    const FAILED_IMAGE = 'failedImage';
+    const SUCCESS_IMAGE = 'imageData';
+}

@@ -1,0 +1,18 @@
+<?php
+namespace OrionService\Constant;
+
+class OrionServiceStateCode
+{
+    const CHECK_TOKEN_FAILED = 50001;
+    const QUERY_PRODUCT_FAILED = 50005;
+    const PARAM_PRODUCT_ID_EMPTY = 50010;
+    const QUERY_ACCOUNT_SERVICE_FAILED = 50015;
+
+    const PARAM_START_DATE_EMPTY = 50020;
+    const PARAM_END_DATE_EMPTY = 50025;
+    const QUERY_ACCOUNT_GEO_FAILED = 50030;
+
+    const QUERY_USER_BY_NAME_FAILED = 50101;
+    const QUERY_USER_BY_NAME_PARAMETER_LOSS = 50105;
+    const QUERY_USER_BY_NAME_PARAMETER_WRONG = 50109;
+}

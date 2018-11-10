@@ -1,0 +1,15 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/24
+ * Time: 上午11:06
+ */
+
+namespace DBService\Constant;
+
+
+class OrionDBQueryParamKey
+{
+    const PRODUCT_ID = 'productId';
+}

@@ -1,0 +1,36 @@
+<?php
+namespace FBBasicService\Constant\ServiceConstant;
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/25
+ * Time: 下午9:27
+ */
+class QueryParamConstant
+{
+    const ACCOUNT_ID = 'accountId';
+
+    const START_DATE = 'startDate';
+
+    const END_DATE = 'endDate';
+
+    const AD_ID = 'adId';
+
+    const ADSET_ID = 'adsetId';
+
+    const MATERIAL_PATH = 'materialPath';
+
+    const ADSET_FIELDS = 'adsetFields';
+
+    const BASE_ADSET_ID = 'baseAdsetId';
+
+    const NEW_ADSET_NAME = 'newAdsetName';
+
+    const TO_CAMPAIGN_ID = 'toCampaignId';
+
+    const VIDEO_ID = 'videoId';
+
+    const AD_NAME = 'adName';
+
+    const CREATIVE_INFO_FIELD = 'creativeField';
+}

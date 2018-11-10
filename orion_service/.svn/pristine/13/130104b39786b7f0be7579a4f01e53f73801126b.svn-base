@@ -1,0 +1,39 @@
+{
+  "requestParamMap":[
+    {
+      "productBasicInfo": {
+        "serviceName": "OrionProductService",
+        "className": "\\OrionService\\Business\\ProductService",
+        "functionName": "queryValidProduct"
+      }
+    },
+    {
+      "accountBasicInfo": {
+        "serviceName": "OrionProductService",
+        "className": "\\OrionService\\Business\\ProductService",
+        "functionName": "queryAccountByProductId"
+      }
+    },
+    {
+      "actGeoInsight": {
+        "serviceName": "OrionProductService",
+        "className": "\\OrionService\\Business\\ProductService",
+        "functionName": "queryAccountGeoInsight"
+      }
+    },
+    {
+      "userAuth": {
+        "serviceName": "OrionUserService",
+        "className": "\\OrionService\\Business\\UserAuthService",
+        "functionName": "validUser"
+      }
+    },
+    {
+      "materialUpload": {
+        "serviceName": "UploadMaterialService",
+        "className": "\\OrionService\\Business\\UploadMaterialService",
+        "functionName": "receiveMaterialZip"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/6
+ * Time: 下午2:47
+ */
+
+namespace DuplicateAd\Constant;
+
+
+class DAResponseField
+{
+    const FIRST_AD_ID = 'firstAdId';
+    const AD_TYPE = 'adType';
+
+    const ADSET_ALL_FIELD = 'adsetAllField';
+    const CREATIVE_ALL_FIELD = 'creativeAllField';
+}

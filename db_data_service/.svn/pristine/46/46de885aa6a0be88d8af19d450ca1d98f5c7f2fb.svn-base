@@ -1,0 +1,31 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/24
+ * Time: 上午11:06
+ */
+
+namespace DBService\Constant;
+
+
+class OrionDBQueryParamKey
+{
+    const PRODUCT_ID = 'productId';
+
+    const DUMPLICATE_TASK_STATUS_ID = 'id';
+
+    const DUMPLICATE_TASK_ID = 'id';
+    const DUMPLICATE_TASK_TASK_NAME = 'taskName';
+    const DUMPLICATE_TASK_USER_ID = 'userId';
+    const DUMPLICATE_TASK_STATUS = 'status';
+    const DUMPLICATE_TASK_ROOTPATH = 'rootPath';
+    const DUMPLICATE_TASK_JSON_NAME = 'jsonName';
+    const DUMPLICATE_TASK_CREATE_TIME = 'createTime';
+    const DUMPLICATE_TASK_COMPLETE_TIME = 'completeTime';
+
+    const USER_INFO_ID = 'id';
+    const USER_INFO_NAME = 'userName';
+
+    const DUMPLICATE_TASK_USER_ID_FLAG = 'userIdFlag';
+}

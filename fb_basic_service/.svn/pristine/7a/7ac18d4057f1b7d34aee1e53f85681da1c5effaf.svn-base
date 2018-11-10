@@ -1,0 +1,71 @@
+<?php
+namespace FBBasicService\Business;
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Service\ServiceBase;
+use FBBasicService\Common\FBLogger;
+use FBBasicService\Common\FBServiceResult;
+use FBBasicService\Constant\FBServiceStatusCode;
+use FBBasicService\Constant\ServiceConstant\QueryParamConstant;
+use FBBasicService\Constant\ServiceConstant\ResponseDataField;
+use FBBasicService\Facade\AccountFacade;
+use FBBasicService\Facade\AdFacade;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/2
+ * Time: 下午8:59
+ */
+class FBNodeService extends ServiceBase
+{
+    public function queryAccountById($requestParam)
+    {
+        $response = new FBServiceResult();
+        if(!array_key_exists(QueryParamConstant::ACCOUNT_ID, $requestParam))
+        {
+            FBLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#queryAccount# There is not param: accountId');
+            $response->setErrorCode(FBServiceStatusCode::QUERY_PARAM_INCOMPLETE);
+            return $response;
+        }
+        $accountId = $requestParam[QueryParamConstant::ACCOUNT_ID];
+        $accountEntity = AccountFacade::getAccountById($accountId);
+        if(false === $accountEntity)
+        {
+            $response->setErrorCode(FBServiceStatusCode::GET_FB_ACCOUNT_FAILED);
+            return $response;
+        }
+
+        $accountInfo = array();
+        $accountInfo[ResponseDataField::ACCOUNT_NAME] = $accountEntity->getName();
+        $accountInfo[ResponseDataField::SPEND_CAP] = $accountEntity->getSpendCap();
+        $accountInfo[ResponseDataField::SPEND_AMOUNT] = $accountEntity->getAmountSpend();
+
+        $response->setData($accountInfo);
+        return $response;
+    }
+
+    public function getAdType($requestParam)
+    {
+        $response = new FBServiceResult();
+        if(!array_key_exists(QueryParamConstant::AD_ID, $requestParam))
+        {
+            FBLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#getAdType# There is not param: adId');
+            $response->setErrorCode(FBServiceStatusCode::QUERY_PARAM_INCOMPLETE);
+            return $response;
+        }
+
+        $adId = $requestParam[QueryParamConstant::AD_ID];
+        $adType = AdFacade::getAdType($adId);
+        if(false === $adType)
+        {
+            $response->setErrorCode(FBServiceStatusCode::FAILED_AD_TYPE);
+            return $response;
+        }
+
+        $adTypeInfo = array();
+        $adTypeInfo[ResponseDataField::AD_TYPE] = $adType;
+
+        $response->setData($adTypeInfo);
+        return $response;
+    }
+}

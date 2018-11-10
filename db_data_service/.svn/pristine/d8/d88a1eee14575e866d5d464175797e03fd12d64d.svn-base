@@ -1,0 +1,76 @@
+{
+  "requestParamMap":[
+    {
+      "orionProduct": {
+        "serviceName": "OrionProductService",
+        "className": "\\DBService\\Business\\OrionBasicService",
+        "functionName": "getValidProductInfo",
+        "isAuth": false
+      }
+    },
+    {
+      "accountInfo": {
+        "serviceName": "OrionProductService",
+        "className": "\\DBService\\Business\\OrionBasicService",
+        "functionName": "getAccountsByProductId",
+        "isAuth": false
+      }
+    },
+    {
+      "userInfo": {
+        "serviceName": "QueryUserService",
+        "className": "\\DBService\\Business\\UserBasicService",
+        "functionName": "getUserData",
+        "isAuth": false
+      }
+    },
+    {
+      "userInfoById": {
+        "serviceName": "QueryUserService",
+        "className": "\\DBService\\Business\\UserBasicService",
+        "functionName": "getUserById",
+        "isAuth": false
+      }
+    },
+    {
+      "insertTask": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+        "functionName": "insertDuplicateTask",
+        "isAuth": false
+      }
+    },
+    {
+      "selectTaskByUserId": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+        "functionName": "selectTaskByUserId",
+        "isAuth": false
+      }
+    },
+    {
+      "selectTaskByStatus": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+        "functionName": "selectTaskByStatus",
+        "isAuth": false
+      }
+    },
+    {
+      "selectTaskAll": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+        "functionName": "selectTaskAll",
+        "isAuth": false
+      }
+    },
+    {
+      "updateTask": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+        "functionName": "updateDuplicateTask",
+        "isAuth": false
+      }
+    }
+  ]
+}

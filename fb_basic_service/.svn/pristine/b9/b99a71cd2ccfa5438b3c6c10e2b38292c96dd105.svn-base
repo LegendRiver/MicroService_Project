@@ -1,0 +1,14 @@
+{
+  "logConfig": [
+    {
+      "logModule": "default",
+      "logPath": "",
+      "logLevel": 6
+    },
+    {
+      "logModule": "fb_basic_service",
+      "logPath": "/var/www/html/test_environment/log/fb_service_log",
+      "logLevel": 4
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: caijia
+ * Date: 18/1/25
+ * Time: 下午2:39
+ */
+
+namespace OrionService\Constant;
+
+
+class QueryParamConstant
+{
+    const PRODUCT_ID = 'productId';
+    const START_DATE = 'startDate';
+    const END_DATE = 'endDate';
+    const USER_NAME = 'userName';
+    const USER_PASSWORD = 'password';
+}

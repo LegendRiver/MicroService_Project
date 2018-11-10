@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/18
+ * Time: 上午10:52
+ */
+class DBServiceFacade
+{
+    const DB_SERVER_KEY = 'db_service';
+}

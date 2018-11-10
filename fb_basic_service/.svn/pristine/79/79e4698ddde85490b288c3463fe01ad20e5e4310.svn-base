@@ -1,0 +1,14 @@
+<?php
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'third_lib/facebook_sdk/vendor/autoload.php';
+
+use FBBasicService\Common\FBPathManager;
+use FBBasicService\Common\FBLogger;
+
+initFBLogger();
+
+
+function initFBLogger()
+{
+    $fbLoggerConfFile = FBPathManager::instance()->getLogConfigPath();
+    FBLogger::instance()->initLogger($fbLoggerConfFile);
+}

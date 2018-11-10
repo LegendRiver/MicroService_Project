@@ -1,0 +1,15 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/24
+ * Time: 下午9:30
+ */
+
+namespace OrionService\Constant;
+
+
+class ServiceEndpointConstant
+{
+    const QUERY_PRODUCT_INFO = 'orionProduct';
+}

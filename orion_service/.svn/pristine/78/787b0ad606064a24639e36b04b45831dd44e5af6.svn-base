@@ -1,0 +1,99 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/2
+ * Time: 下午4:45
+ */
+
+namespace OrionService\Handler;
+
+
+use CommonMoudle\Helper\FileHelper;
+use CommonMoudle\Helper\JsonFileHelper;
+use CommonMoudle\Service\ServiceBaseConstant;
+use OrionService\Constant\OrionServiceStateCode;
+use OrionService\Constant\QueryParamConstant;
+
+class UploadMaterialServiceHandler
+{
+    private $configInfo;
+
+    private $saveZipRootPath;
+
+    private $unzipRootPath;
+
+    public function __construct()
+    {
+        $duplicate_file = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'conf' . DIRECTORY_SEPARATOR . 'upload_material_conf.json';
+        $this->configInfo = JsonFileHelper::readJsonFile($duplicate_file);
+        $this->saveZipRootPath = $this->configInfo['saveZipPath'];
+        $this->unzipRootPath = $this->configInfo['unzipPath'];
+    }
+
+    public function checkQueryParam($param)
+    {
+        if(!array_key_exists(QueryParamConstant::UPLOAD_FILE_DATA, $param))
+        {
+            return OrionServiceStateCode::UPLOAD_PARAM_FILE_DATA;
+        }
+        if(empty($param[QueryParamConstant::UPLOAD_FILE_DATA]))
+        {
+            return OrionServiceStateCode::UPLOAD_PARAM_FILE_DATA;
+        }
+
+
+        if(!array_key_exists(QueryParamConstant::UPLOAD_USER_NAME, $param))
+        {
+            return OrionServiceStateCode::UPLOAD_PARAM_USER_NAME;
+        }
+        if(empty($param[QueryParamConstant::UPLOAD_USER_NAME]))
+        {
+            return OrionServiceStateCode::UPLOAD_PARAM_USER_NAME;
+        }
+
+        if(!array_key_exists(QueryParamConstant::UPLOAD_USER_ID, $param))
+        {
+            return OrionServiceStateCode::UPLOAD_PARAM_USER_ID;
+        }
+        if(empty($param[QueryParamConstant::UPLOAD_USER_ID]))
+        {
+            return OrionServiceStateCode::UPLOAD_PARAM_USER_ID;
+        }
+
+        if(!array_key_exists(QueryParamConstant::UPLOAD_TASK_NAME, $param))
+        {
+            return OrionServiceStateCode::UPLOAD_PARAM_TASK_NAME;
+        }
+        if(empty($param[QueryParamConstant::UPLOAD_TASK_NAME]))
+        {
+            return OrionServiceStateCode::UPLOAD_PARAM_TASK_NAME;
+        }
+
+        return ServiceBaseConstant::OK;
+    }
+
+    public function saveFile($fileData, $fileName='')
+    {
+        if(empty($fileName))
+        {
+            //没有判断文件类型，后续如果需要再改进
+            $fileName = time() . '.zip';
+        }
+        else
+        {
+            $fileName = time() . $fileName;
+        }
+
+        $saveFile = $this->saveZipRootPath . DIRECTORY_SEPARATOR . $fileName;
+        $flag = FileHelper::writeFileContent($fileData, $saveFile);
+        if(false === $flag)
+        {
+            return false;
+        }
+        else
+        {
+           return $saveFile;
+        }
+    }
+}

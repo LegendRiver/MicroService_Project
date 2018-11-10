@@ -1,0 +1,29 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/18
+ * Time: 下午3:19
+ */
+
+namespace DBService\Common;
+
+
+use CommonMoudle\Service\ServiceResult;
+use DBService\Constant\OrionDBStatusCode;
+
+class OrionDBServiceResult extends ServiceResult
+{
+    public function getSubMessage()
+    {
+        return array
+		(
+			OrionDBStatusCode::USER_NAME_EMPTY => 'select table user_info needs a parameter, just like name, but the parameter is null.',
+			OrionDBStatusCode::SELECT_USER_NAME_FAIL => 'Failed to select table user_info.',
+
+            OrionDBStatusCode::PARAM_NULL_PRODUCT_ID => 'The query param product id is null',
+            OrionDBStatusCode::FAILED_DB_QUERY_ACCOUNT => 'Failed to query account by product ID',
+            OrionDBStatusCode::FAILED_QUERY_PRODUCT => 'Failed to query valid product',
+        );
+    }
+}

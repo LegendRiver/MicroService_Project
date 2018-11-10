@@ -1,0 +1,68 @@
+<?php
+
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Helper\MailerHelper;
+use CommonMoudle\Helper\ServiceHelper;
+use CommonMoudle\Http\HttpClient;
+use CommonMoudle\Http\RequestInfo;
+use CommonMoudle\Logger\ServerLogger;
+use DuplicateAd\Business\DuplicateHandler;
+use DuplicateAd\Constant\DACommonConstant;
+use DuplicateAd\Constant\DAEndpointConstant;
+use DuplicateAd\Constant\DAResponseField;
+use DuplicateAd\Constant\RequestParamConstant;
+use DuplicateAd\DBManager\DBServiceFacade;
+use DuplicateAd\Constant\DBFieldConstant;
+
+main();
+
+function taskDeal($duplicateTask)
+{
+	foreach ($duplicateTask as $taskValue)
+	{
+		$taskName = $taskValue->getTaskName();
+		$userId = $taskValue->getUserId();
+		$rootPath = $taskValue->getRootPath();
+		$jsonName = $taskValue->getJsonName();
+		$id = $taskValue->getId();
+		$createTime = $taskValue->getCreateTime();
+		$duplicateHandler = new DuplicateHandler($rootPath, $jsonName);
+		//TODO:RELEASE
+//		$response = $duplicateHandler->duplicateAd();
+		$response = 1;
+		if (1 == $response)
+		{
+			DBServiceFacade::updateDuplicateTaskById($taskName, $userId, 0, $rootPath, $jsonName, $id);
+			$queryParam = array(
+				RequestParamConstant::DB_SERVICE_USER_ID => $userId
+			);
+			$dbResponse = HttpClient::instance()->sendRequest(DACommonConstant::DB_SERVER_KEY, RequestInfo::METHOD_GET, DAEndpointConstant::USER_INFO_BY_ID, $queryParam);
+			if(!ServiceHelper::checkResponse($dbResponse))
+			{
+				ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#queryUserInfo#Failed to check response');
+				return false;
+			}
+			$body = $dbResponse->getBody();
+			$userData = json_decode($body, true);
+			$email = $userData[DAResponseField::DATA][0][DAResponseField::EMAIL];
+			MailerHelper::instance()->sendMail([$email], $taskName, 'task_name: ' . $taskName . ' create_time: ' . $createTime . ' root_path: ' . $rootPath . ' json_name: ' . $jsonName . ' user_id: ' . $userId);
+		}
+	}
+}
+
+function main()
+{
+	$interval = 60 * 5;
+	do{
+		$duplicateTask = DBServiceFacade::getDuplicateTaskByStatus(1);
+		$taskCount = count($duplicateTask);
+		if ($taskCount > 0)
+		{
+			taskDeal($duplicateTask);
+		}
+		sleep($interval);
+	}while(true);
+
+}

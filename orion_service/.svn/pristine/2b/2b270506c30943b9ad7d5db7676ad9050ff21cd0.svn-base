@@ -1,0 +1,11 @@
+{
+  "requestParamMap":[
+    {
+      "productBasicInfo": {
+        "serviceName": "OrionProductService",
+        "className": "\\OrionService\\Business\\ProductService",
+        "functionName": "queryValidProduct"
+      }
+    }
+  ]
+}

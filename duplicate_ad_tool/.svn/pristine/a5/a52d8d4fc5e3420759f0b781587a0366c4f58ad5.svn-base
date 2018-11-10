@@ -1,0 +1,21 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/6
+ * Time: 下午2:43
+ */
+
+namespace DuplicateAd\Constant;
+
+
+class RequestParamConstant
+{
+    const FB_SERVICE_ADSET_ID = 'adsetId';
+
+    const FB_SERVICE_AD_ID = 'adId';
+
+    const FB_SERVICE_ACCOUNT_ID = 'accountId';
+
+    const FB_SERVICE_MATERIAL_PATH = 'materialPath';
+}

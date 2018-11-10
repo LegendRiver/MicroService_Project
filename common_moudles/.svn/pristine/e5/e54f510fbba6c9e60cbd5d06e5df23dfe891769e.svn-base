@@ -1,0 +1,22 @@
+<?php
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+use CommonMoudle\Helper\FileHelper;
+use CommonMoudle\Helper\ExcelFileHelper;
+use CommonMoudle\Logger\ServerLogger;
+use CommonMoudle\Constant\LogConstant;
+
+date_default_timezone_set("Asia/Shanghai");
+
+excelTest();
+function getFileNameTest()
+{
+    $path = '/dsdfds/sdfsf/ddfds.csv';
+    $fileName = FileHelper::getFileNameFromPath($path);
+    print_r($fileName);
+}
+
+function excelTest()
+{
+    ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_WARNING, "sdfsfaf");
+    ExcelFileHelper::readExcelFile('a.xlsx');
+}

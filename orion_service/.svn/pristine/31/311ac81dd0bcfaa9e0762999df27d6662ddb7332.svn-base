@@ -1,0 +1,43 @@
+<?php
+namespace OrionService\Handler;
+
+use CommonMoudle\Helper\CommonHelper;
+use OrionService\FB\FBServiceFacade;
+use OrionService\Constant\InField\DBAccountField;
+use OrionService\Constant\InField\FBAccountField;
+use OrionService\Constant\OutField\ProductField;
+use OrionService\DB\DBProductServiceFacade;
+
+class ProductServiceHandler
+{
+    public static function getAccountData($productId)
+    {
+        $accountList = DBProductServiceFacade::queryFBAccountByProduct($productId);
+
+        $accountInfo = array();
+        $accountInfo[ProductField::ACCOUNT_BASIC_TITLE] = ProductField::$accountBasicTitle;
+        $actData = array();
+        foreach ($accountList as $account)
+        {
+            $id = CommonHelper::getArrayValueByKey(DBAccountField::ACCOUNT_ID, $account);
+            $accountId = CommonHelper::getArrayValueByKey(DBAccountField::FB_ACCOUNT_ID, $account);
+            $name = CommonHelper::getArrayValueByKey(DBAccountField::ACCOUNT_NAME, $account);
+            $agency = CommonHelper::getArrayValueByKey(DBAccountField::ACCOUNT_AGENCY, $account);
+
+            $fbAccount = FBServiceFacade::queryAccountById($accountId);
+            $cap = 0;
+            $totalSpend = 0;
+            if(false !== $fbAccount)
+            {
+                $name = CommonHelper::getArrayValueByKey(FBAccountField::ACCOUNT_NAME, $fbAccount);
+                $cap = CommonHelper::getArrayValueByKey(FBAccountField::SPEND_CAP, $fbAccount);
+                $totalSpend = CommonHelper::getArrayValueByKey(FBAccountField::SPEND_AMOUNT, $fbAccount);
+            }
+
+            $actData[$id] = array($accountId, $name, $agency, $cap/100, $totalSpend/100);
+        }
+        $accountInfo[ProductField::ACCOUNT_BASIC_DATA] = $actData;
+
+        return $accountInfo;
+    }
+}

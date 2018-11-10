@@ -1,0 +1,30 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/7
+ * Time: 下午5:11
+ */
+
+namespace DuplicateAd\Business;
+
+
+use CommonMoudle\Helper\FileHelper;
+
+class CarouselVideoCopyHelper extends CarouselCopyHelper
+{
+
+    protected function getUploadMaterial($accountId, $materialPath)
+    {
+        $dirMaterialMap = array();
+        $subDirList = FileHelper::getSubDirList($materialPath);
+        foreach($subDirList as $dir)
+        {
+            $dirName = basename($dir);
+            $pathMap = $this->uploadVideoOperation($accountId, $materialPath);
+            $dirMaterialMap[$dirName] = $pathMap;
+        }
+
+        return $dirMaterialMap;
+    }
+}

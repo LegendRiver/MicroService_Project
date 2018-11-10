@@ -1,0 +1,17 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: caijia
+ * Date: 18/1/25
+ * Time: 下午9:37
+ */
+
+namespace OrionService\Constant\OutField;
+
+
+class UserInfoField
+{
+	const USERNAME = 'userName';
+	const ISSUCCESS = 'isSuccess';
+	const TOKEN = 'token';
+}

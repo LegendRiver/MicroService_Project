@@ -1,0 +1,19 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/25
+ * Time: 上午9:38
+ */
+
+namespace CommonMoudle\Service;
+
+
+class ServiceBaseConstant
+{
+    const OK = 200;
+
+    const BODY_STATE_CODE = 'statusCode';
+    const BODY_MESSAGE = 'message';
+    const BODY_DATA = 'data';
+}

@@ -1,0 +1,61 @@
+<?php
+namespace OrionService\DB;
+
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Helper\CommonHelper;
+use CommonMoudle\Helper\JsonFileHelper;
+use CommonMoudle\Helper\ServiceHelper;
+use CommonMoudle\Http\HttpClient;
+use CommonMoudle\Http\RequestInfo;
+use CommonMoudle\Logger\ServerLogger;
+use CommonMoudle\Service\ServiceBaseConstant;
+use OrionService\Constant\CommonConstant;
+use OrionService\Constant\SendRequestParamConstant;
+use OrionService\Constant\ServiceEndpointConstant;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/18
+ * Time: 上午10:52
+ */
+class DBProductServiceFacade
+{
+    public static function queryValidProduct()
+    {
+        $dbResponse = HttpClient::instance()->sendRequest(CommonConstant::DB_SERVER_KEY, RequestInfo::METHOD_GET,
+            ServiceEndpointConstant::QUERY_DB_PRODUCT_INFO);
+
+        if(!ServiceHelper::checkResponse($dbResponse))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#queryValidProduct#Failed to check response');
+            return false;
+        }
+
+        $responseData = JsonFileHelper::decodeJsonString($dbResponse->getBody());
+        $productData = CommonHelper::getArrayValueByKey(ServiceBaseConstant::BODY_DATA, $responseData);
+
+        return $productData;
+    }
+
+    public static function queryFBAccountByProduct($productId)
+    {
+        $queryParam = array(
+            SendRequestParamConstant::DB_SERVICE_PRODUCT_ID => $productId
+        );
+
+        $dbResponse = HttpClient::instance()->sendRequest(CommonConstant::DB_SERVER_KEY, RequestInfo::METHOD_GET,
+            ServiceEndpointConstant::QUERY_DB_ACCOUNT_INFO, $queryParam);
+
+        if(!ServiceHelper::checkResponse($dbResponse))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#queryFBAccountByProduct#Failed to check response');
+            return false;
+        }
+
+        $responseData = JsonFileHelper::decodeJsonString($dbResponse->getBody());
+        $accountData = CommonHelper::getArrayValueByKey(ServiceBaseConstant::BODY_DATA, $responseData);
+
+        return $accountData;
+    }
+}

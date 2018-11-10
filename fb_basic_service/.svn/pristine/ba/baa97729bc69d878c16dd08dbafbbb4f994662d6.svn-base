@@ -1,0 +1,16 @@
+{
+  "requestParamMap":[
+    {
+      "accountInfo": {
+        "serviceName": "MockService",
+        "className": "\\FBBasicService\\Mock\\MockService",
+        "functionName": "mockQueryAccountById"
+      },
+      "accountGEOInsight": {
+        "serviceName": "MockService",
+        "className": "\\FBBasicService\\Mock\\MockService",
+        "functionName": "mockQueryAccountCountyBDInsight"
+      }
+    }
+  ]
+}

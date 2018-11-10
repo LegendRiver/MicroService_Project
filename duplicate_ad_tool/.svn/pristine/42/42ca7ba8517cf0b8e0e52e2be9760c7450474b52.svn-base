@@ -1,0 +1,19 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/7
+ * Time: 下午5:10
+ */
+
+namespace DuplicateAd\Business;
+
+
+
+class SingleImageCopyHelper extends SingleCopyHelper
+{
+    protected function getUploadMaterial($accountId, $materialPath)
+    {
+        return $this->uploadImageOperation($accountId, $materialPath);
+    }
+}

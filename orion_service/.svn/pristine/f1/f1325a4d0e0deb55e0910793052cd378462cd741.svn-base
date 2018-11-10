@@ -1,0 +1,32 @@
+<?php
+namespace OrionService\Common;
+
+use CommonMoudle\Service\ServiceResult;
+use OrionService\Constant\OrionServiceStateCode;
+
+class OrionServiceResult extends ServiceResult
+{
+    protected function getSubMessage()
+    {
+        return array(
+            OrionServiceStateCode::CHECK_TOKEN_FAILED => 'The token is invalid.',
+            OrionServiceStateCode::QUERY_PRODUCT_FAILED => 'Failed to query product by db service.',
+            OrionServiceStateCode::PARAM_PRODUCT_ID_EMPTY => 'The param productId is empty',
+            OrionServiceStateCode::QUERY_ACCOUNT_SERVICE_FAILED => 'Failed to query accountInfo by productId',
+            OrionServiceStateCode::QUERY_ACCOUNT_GEO_FAILED => 'Failed to query account geo insight by productId. The result of query accountList is false',
+
+            OrionServiceStateCode::PARAM_START_DATE_EMPTY => 'The param startDate is empty',
+            OrionServiceStateCode::PARAM_END_DATE_EMPTY => 'The param endDate is empty',
+
+            OrionServiceStateCode::UPLOAD_PARAM_FILE_DATA => 'The query param fileContent is empty',
+            OrionServiceStateCode::UPLOAD_PARAM_USER_NAME => 'The query param userName is empty',
+            OrionServiceStateCode::UPLOAD_PARAM_USER_ID => 'The query param userId is empty',
+            OrionServiceStateCode::UPLOAD_PARAM_TASK_NAME => 'The query param taskName is empty',
+            OrionServiceStateCode::UPLOAD_SAVE_FILE_FAIL => 'Failed to save file from form data',
+
+            OrionServiceStateCode::QUERY_USER_BY_NAME_FAILED => 'Failed to query user by db service using parameter userName.',
+            OrionServiceStateCode::QUERY_USER_BY_NAME_PARAMETER_LOSS => 'Failed to query user by db service as one of the parameter lossed or both.',
+            OrionServiceStateCode::QUERY_USER_BY_NAME_PARAMETER_WRONG => 'UserName or password wrong.'
+        );
+    }
+}

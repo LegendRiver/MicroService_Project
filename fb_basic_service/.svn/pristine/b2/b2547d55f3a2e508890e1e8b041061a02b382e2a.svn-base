@@ -1,0 +1,18 @@
+<?php
+namespace FBBasicService\Constant\ServiceConstant;
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/25
+ * Time: 下午9:27
+ */
+class QueryParamConstant
+{
+    const ACCOUNT_ID = 'accountId';
+
+    const START_DATE = 'startDate';
+
+    const END_DATE = 'endDate';
+
+    const AD_ID = 'adId';
+}

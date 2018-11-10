@@ -1,0 +1,28 @@
+<?php
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
+
+use FBBasicService\Facade\AdFacade;
+use FBBasicService\Common\APIInit;
+use FBBasicService\Facade\AdsetFacade;
+
+APIInit::init();
+
+adsetFacadeTest();
+
+function getAdTypeTest()
+{
+//    $adId = '23842733040020762';
+//    $adId = '23842751188900070';
+//    $adId = '23842677883720758';
+    $adId = '23842744513020008';
+    $adType = AdFacade::getAdType($adId);
+
+    print_r($adType);
+}
+
+function adsetFacadeTest()
+{
+    $accountId = '';
+    $adsetField = array();
+    $adsetEntity = AdsetFacade::createAdsetByFields($accountId, $adsetField);
+}

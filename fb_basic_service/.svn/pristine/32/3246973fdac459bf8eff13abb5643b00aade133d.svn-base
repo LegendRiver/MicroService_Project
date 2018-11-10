@@ -1,0 +1,12 @@
+<?php
+namespace FBBasicService\Constant;
+
+class FBCommonConstant
+{
+    const ADACCOUNT_ID_PREFIX = 'act_';
+
+    const INSIGHT_EXPORT_TYPE_ACCOUNT = 'exportAccount';
+    const INSIGHT_EXPORT_TYPE_CAMPAIGN = 'exportCampaign';
+    const INSIGHT_EXPORT_TYPE_ADSET = 'exportAdset';
+    const INSIGHT_EXPORT_TYPE_AD = 'exportAd';
+}

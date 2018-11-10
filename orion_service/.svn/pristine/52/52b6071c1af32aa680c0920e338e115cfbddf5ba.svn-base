@@ -1,0 +1,7 @@
+{
+  "fb_basic_service":
+  {
+    "serverIP": "124.23.45.34",
+    "port": 8080
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "serviceConfig":[
+    {
+      "serviceName": "MockOrionService",
+      "classInfo": [
+        {
+          "className": "\\OrionService\\Mock\\MockService",
+          "functionList": [
+            "queryProductInfo",
+            "getAccountInfoByProductId",
+            "getAccountCountryBDInsight"
+          ]
+        }
+      ]
+    }
+  ]
+}

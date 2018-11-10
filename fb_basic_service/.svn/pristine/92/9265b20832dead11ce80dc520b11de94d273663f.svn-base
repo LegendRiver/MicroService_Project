@@ -1,0 +1,35 @@
+<?php
+namespace FBBasicService\Business;
+use CommonMoudle\Service\ServiceBase;
+use FBBasicService\Common\FBServiceResult;
+use FBBasicService\Constant\FBServiceStatusCode;
+use FBBasicService\Facade\AccountFacade;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/2
+ * Time: 下午8:59
+ */
+class FBNodeService extends ServiceBase
+{
+    public function queryAccountById($requestParam)
+    {
+        $response = new FBServiceResult();
+        $accountId = $requestParam['accountId'];
+        $accountEntity = AccountFacade::getAccountById($accountId);
+        if(false === $accountEntity)
+        {
+            $response->setErrorCode(FBServiceStatusCode::GET_FB_ACCOUNT_FAILED);
+            return json_encode($response->getValue());
+        }
+
+        $accountInfo = array();
+        $accountInfo['accountName'] = $accountEntity->getName();
+        $accountInfo['spendCap'] = $accountEntity->getSpendCap();
+        $accountInfo['spendAmount'] = $accountEntity->getAmountSpend();
+
+        $response->setData($accountInfo);
+        return $response;
+    }
+}

@@ -1,0 +1,9 @@
+{
+  "logConfig": [
+    {
+      "logModule": "default",
+      "logPath": "",
+      "logLevel": 6
+    }
+  ]
+}

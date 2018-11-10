@@ -1,0 +1,40 @@
+<?php
+namespace OrionService\DB;
+
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Helper\CommonHelper;
+use CommonMoudle\Helper\JsonFileHelper;
+use CommonMoudle\Helper\ServiceHelper;
+use CommonMoudle\Http\HttpClient;
+use CommonMoudle\Http\RequestInfo;
+use CommonMoudle\Logger\ServerLogger;
+use CommonMoudle\Service\ServiceBaseConstant;
+use OrionService\Constant\ServiceEndpointConstant;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/18
+ * Time: 上午10:52
+ */
+class DBServiceFacade
+{
+    const DB_SERVER_KEY = 'db_service';
+
+    public static function queryValidProduct()
+    {
+        $dbResponse = HttpClient::instance()->sendRequest(self::DB_SERVER_KEY, RequestInfo::METHOD_GET,
+            ServiceEndpointConstant::QUERY_PRODUCT_INFO);
+
+        if(!ServiceHelper::checkResponse($dbResponse))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'Failed to check response');
+            return false;
+        }
+
+        $responseData = JsonFileHelper::decodeJsonString($dbResponse->getBody());
+        $productData = CommonHelper::getArrayValueByKey(ServiceBaseConstant::BODY_DATA, $responseData);
+
+        return $productData;
+    }
+}

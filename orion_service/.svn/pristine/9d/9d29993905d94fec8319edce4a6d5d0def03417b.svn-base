@@ -1,0 +1,9 @@
+<?php
+namespace OrionService\Constant;
+
+class OrionServiceStateCode
+{
+    const CHECK_TOKEN_FAILED = 50001;
+    const QUERY_PRODUCT_FAILED = 50005;
+    const QUERY_USER_BY_NAME_FAILED = 50101;
+}

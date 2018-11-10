@@ -1,0 +1,26 @@
+{
+  "serviceConfig":[
+    {
+      "serviceName": "QueryNodeService",
+      "classInfo": [
+        {
+          "className": "\\FBBasicService\\Business\\FBNodeService",
+          "functionList": [
+            "queryAccountById"
+          ]
+        }
+      ]
+    },
+    {
+      "serviceName": "QueryInsightService",
+      "classInfo": [
+        {
+          "className": "\\FBBasicService\\Business\\FBInsightService",
+          "functionList": [
+            "queryAccountCountryBDInsight"
+          ]
+        }
+      ]
+    }
+  ]
+}

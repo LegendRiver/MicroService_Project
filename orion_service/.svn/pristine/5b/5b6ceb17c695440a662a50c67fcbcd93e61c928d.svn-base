@@ -1,0 +1,31 @@
+<?php
+namespace OrionService\DB;
+
+use CommonMoudle\Http\HttpClient;
+use CommonMoudle\Http\RequestInfo;
+use CommonMoudle\Service\ServiceBaseConstant;
+use OrionService\Constant\QueryParamConstant;
+use OrionService\Constant\ServiceEndpointConstant;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/18
+ * Time: 上午10:52
+ */
+class DBUserServiceFacade
+{
+	const DB_SERVER_KEY = 'db_service';
+
+	public static function queryUserByName($userName)
+	{
+		$queryParam =
+			[
+				QueryParamConstant::USER_NAME => $userName
+			];
+		$res = HttpClient::instance()->sendRequest(static::DB_SERVER_KEY, RequestInfo::METHOD_GET, ServiceEndpointConstant::QUERY_USER_INFO,$queryParam);
+		$result = $res->getBody();
+		$data = json_decode($result, true);
+		return $data[ServiceBaseConstant::BODY_DATA][0];
+	}
+}

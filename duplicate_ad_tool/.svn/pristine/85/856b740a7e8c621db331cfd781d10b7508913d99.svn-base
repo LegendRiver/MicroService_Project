@@ -1,0 +1,19 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/6
+ * Time: 下午2:45
+ */
+
+namespace DuplicateAd\Constant;
+
+
+class DAEndpointConstant
+{
+    const QUERY_FB_FIRST_AD = 'firstAd';
+    const QUERY_FB_AD_TYPE = 'adType';
+
+    const QUERY_ADSET_FIELD = 'adsetAllField';
+    const QUERY_CREATIVE_FIELD = 'creativeAllField';
+}

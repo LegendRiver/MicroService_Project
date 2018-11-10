@@ -1,0 +1,157 @@
+<?php
+namespace CommonMoudle\Service;
+use CommonMoudle\Constant\ErrorCodeConstant;
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Constant\ServiceConstant;
+use CommonMoudle\Helper\FormDataHelper;
+use CommonMoudle\Helper\JWTHelper;
+use CommonMoudle\Logger\ServerLogger;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2017/12/29
+ * Time: 下午3:07
+ */
+class RESTCore
+{
+    public static function setHeader()
+    {
+        header("Access-Control-Allow-Origin: *");
+        header("Content-Type: application/json;charset=utf-8");
+    }
+
+    public static function parseRequestInfo()
+    {
+        $requestMethod = $_SERVER[ServiceBaseConstant::SERVER_FIELD_REQUEST_METHOD];
+        $requestParam = $_REQUEST;
+        if($requestMethod == ServiceBaseConstant::REQUEST_METHOD_POST)
+        {
+            $postParam = static::parsePostContent();
+        }
+
+        if(!empty($postParam))
+        {
+            $requestParam = array_merge($requestParam, $postParam);
+        }
+
+        if(!array_key_exists(ServiceConstant::URL_PARAM_ALIAS, $requestParam))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#Service#There is alias param in request');
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#Service#Param: ' . print_r($requestParam, true));
+            return array();
+        }
+
+        $serviceAlias = $requestParam[ServiceConstant::URL_PARAM_ALIAS];
+        if(ServiceParamMapManager::instance()->isExistAlias($serviceAlias))
+        {
+            $requestParam[ServiceConstant::PARSED_PARAM_SERVICE_NAME] = ServiceParamMapManager::instance()->getServiceName($serviceAlias);
+            $requestParam[ServiceConstant::PARSED_PARAM_CLASS_NAME] = ServiceParamMapManager::instance()->getClassName($serviceAlias);
+            $requestParam[ServiceConstant::PARSED_PARAM_FUNCTION_NAME] = ServiceParamMapManager::instance()->getFunctionName($serviceAlias);
+        }
+        else
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#Service#Failed to find request map in conf by ' . $serviceAlias);
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#Service#Param: ' . print_r($requestParam, true));
+            return array();
+        }
+
+        return $requestParam;
+    }
+
+    public static function callService()
+    {
+        $result = new ServiceResult();
+        try
+        {
+            $requestParameters = self::parseRequestInfo();
+            if(empty($requestParameters))
+            {
+                $result->setErrorCode(ErrorCodeConstant::CODE_PARSE_PARAM_FAILED);
+                return json_encode($result->getValue());
+            }
+
+            $serviceName = $requestParameters[ServiceConstant::PARSED_PARAM_SERVICE_NAME];
+            $className = $requestParameters[ServiceConstant::PARSED_PARAM_CLASS_NAME];
+            $functionName = $requestParameters[ServiceConstant::PARSED_PARAM_FUNCTION_NAME];
+
+            $returnResult = ServiceManager::instance()->callService($serviceName, $className, $functionName, $requestParameters);
+            if(empty($returnResult))
+            {
+                $result->setErrorCode(ErrorCodeConstant::CODE_CALL_SERVICE_EMPTY);
+                return json_encode($result->getValue());
+            }
+            else
+            {
+                return json_encode($returnResult->getValue());
+            }
+        } catch (\Exception $e)
+        {
+            ServerLogger::instance()->writeExceptionLog(LogConstant::LOGGER_LEVEL_ERROR, $e);
+            $result->setErrorCode(ErrorCodeConstant::CODE_CALL_SERVICE_EXCEPTION);
+            return json_encode($result->getValue());
+        }
+    }
+
+    public static function checkToken($secretKey)
+    {
+        if(!array_key_exists(ServiceBaseConstant::SERVER_FIELD_AUTHENTICATE, $_SERVER))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'There is not token in header');
+            return false;
+        }
+
+        $token = $_SERVER[ServiceBaseConstant::SERVER_FIELD_AUTHENTICATE];
+        $checkResult = JWTHelper::validJWT($token, $secretKey);
+
+        return !empty($checkResult);
+    }
+
+    private static function parsePostContent()
+    {
+        $postParam = array();
+
+        $contentType = $_SERVER[ServiceBaseConstant::SERVER_FIELD_CONTENT_TYPE];
+
+        if(empty($contentType))
+        {
+            return $postParam;
+        }
+
+        if($contentType == ServiceBaseConstant::CONTENT_TYPE_JSON)
+        {
+            $bodyData = file_get_contents(ServiceBaseConstant::INPUT_CONTENT);
+            $postParam = json_decode($bodyData, true);
+        }
+        else if($contentType == ServiceBaseConstant::CONTENT_TYPE_FORM_DATA)
+        {
+            $postParam = static::parseFormData();
+        }
+        else
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_WARNING, 'Failed to parse content type: ' . $contentType);
+        }
+
+        return $postParam;
+    }
+
+    private static function parseFormData()
+    {
+        try
+        {
+            $dataHandler = fopen(ServiceBaseConstant::INPUT_CONTENT, 'r');
+            $bodyParam = FormDataHelper::parseFormData($dataHandler);
+            fclose($dataHandler);
+            return $bodyParam;
+        }
+        catch (\Exception $e)
+        {
+            if(!empty($dataHandler))
+            {
+                fclose($dataHandler);
+            }
+            return array();
+        }
+    }
+
+}

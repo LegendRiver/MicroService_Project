@@ -1,0 +1,8 @@
+<?php
+namespace DuplicateAd\Constant;
+
+class ServiceConstant
+{
+    const DB_SERVER_KEY = 'db_service';
+    const FB_SERVER_KEY = 'fb_basic_service';
+}

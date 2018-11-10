@@ -1,0 +1,13 @@
+<?php
+
+use FBBasicService\Common\FBPathManager;
+use FBBasicService\Common\FBLogger;
+
+initFBLogger();
+
+
+function initFBLogger()
+{
+    $fbLoggerConfFile = FBPathManager::instance()->getLogConfigPath();
+    FBLogger::instance()->initLogger($fbLoggerConfFile);
+}

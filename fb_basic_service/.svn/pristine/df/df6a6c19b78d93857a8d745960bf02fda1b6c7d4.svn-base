@@ -1,0 +1,56 @@
+{
+  "requestParamMap":[
+    {
+      "accountInfo": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "queryAccountById"
+      },
+      "adType": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "getAdType"
+      },
+      "firstAd": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "getFirstAdId"
+      },
+      "adsetAllField": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "getAdsetAllField"
+      },
+      "creativeAllField": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "getCreativeAllFields"
+      },
+      "uploadVideo": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "uploadVideo"
+      },
+      "uploadImage": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "uploadImage"
+      },
+      "copyAdsetByField": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "duplicateAdsetByField"
+      },
+      "copyAdsetByApi": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "duplicateAdsetByCopy"
+      },
+      "accountGEOInsight": {
+        "serviceName": "QueryInsightService",
+        "className": "\\FBBasicService\\Business\\FBInsightService",
+        "functionName": "queryAccountCountryBDInsight"
+      }
+    }
+  ]
+}

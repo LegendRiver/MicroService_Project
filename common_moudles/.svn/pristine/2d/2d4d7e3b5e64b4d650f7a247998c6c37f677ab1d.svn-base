@@ -1,0 +1,79 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/17
+ * Time: 下午8:09
+ */
+
+namespace CommonMoudle\Http;
+
+use CommonMoudle\Constant\HttpConstant;
+use CommonMoudle\Helper\JsonFileHelper;
+use CommonMoudle\Http\Curl\CurlManager;
+
+abstract class HttpClient
+{
+    private static $instance = null;
+
+    private $serverConfInfo;
+
+    private $curl;
+
+    private function __construct()
+    {
+        $this->curl = new CurlManager();
+
+    }
+
+    public static function instance()
+    {
+       if(is_null(static::$instance))
+       {
+           static::$instance = new static();
+       }
+       return static::$instance;
+    }
+
+    public function initServerInfo($serverConfFile)
+    {
+        $this->serverConfInfo = JsonFileHelper::readJsonFile($serverConfFile);
+    }
+
+    public function sendRequest($serviceKey, $method, $endpoint, $queryParams=array(), $postBodyParams = array())
+    {
+        if(!array_key_exists($serviceKey, $this->serverConfInfo))
+        {
+            return false;
+        }
+
+        $serverInfo = $this->serverConfInfo[$serviceKey];
+        $server = $serverInfo[HttpConstant::CONF_SERVER];
+        $port = $serverInfo[HttpConstant::CONF_PORT];
+
+        $request = new RequestInfo();
+        $request->setServer($server);
+        $request->setPort($port);
+        $request->setMethod($method);
+        $request->setEndpoint($endpoint);
+
+        if(count($queryParams))
+        {
+            $requestParam = new RequestParameter();
+            $requestParam->enhance($queryParams);
+            $request->setQueryParam($requestParam);
+        }
+
+
+        if($method === RequestInfo::METHOD_POST && count($postBodyParams))
+        {
+            $requestBodyParam = new RequestParameter();
+            $requestBodyParam->enhance($postBodyParams);
+            $request->setBodyParam($requestBodyParam);
+        }
+
+        $response = $this->curl->sendRequest($request);
+
+        return $response;
+    }
+}

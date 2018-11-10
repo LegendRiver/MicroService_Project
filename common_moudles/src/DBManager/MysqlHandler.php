@@ -1,0 +1,358 @@
+<?php
+namespace CommonMoudle\DBManager;
+
+    use CommonMoudle\Constant\DBConstant;
+    use CommonMoudle\Constant\LogConstant;
+    use CommonMoudle\Helper\JsonFileHelper;
+    use CommonMoudle\Logger\ServerLogger;
+
+    class MysqlHandler
+    {
+        protected $serverIp;
+        protected $serverPort;
+        protected $userId;
+        protected $password;
+        protected $databaseName;
+        protected $connection;
+
+        public function __construct($configFile)
+        {
+            $this->parseConfigFile($configFile);
+            $errorCode = $this->initDbConnection();
+            if($errorCode === false)
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_EMERGENCY,
+                    sprintf("Db connection init failed: " . $this->serverIp . ':' . $this->serverPort . '; DB: ' .$this->databaseName));
+            }
+        }
+
+        public function __destruct()
+        {
+            $this->closeDbConnection();
+            unset($this);
+        }
+
+        private function parseConfigFile($filePath)
+        {
+            $dbConfigInfo = JsonFileHelper::readJsonFile($filePath);
+            if(false === $dbConfigInfo)
+            {
+                return;
+            }
+
+            if(false === $this->checkConfParam($dbConfigInfo))
+            {
+                return;
+            }
+
+            $this->serverIp = $dbConfigInfo[DBConstant::CONF_SERVER_IP];
+            $this->serverPort = $dbConfigInfo[DBConstant::CONF_SERVER_PORT];
+            $this->userId = $dbConfigInfo[DBConstant::CONF_USER_NAME];
+            $this->password = $dbConfigInfo[DBConstant::CONF_PASSWORD];
+            $this->databaseName = $dbConfigInfo[DBConstant::CONF_DB_NAME];
+        }
+
+        private function checkConfParam($dbConf)
+        {
+            $confKeyList = array(DBConstant::CONF_SERVER_IP, DBConstant::CONF_SERVER_PORT,
+                DBConstant::CONF_DB_NAME, DBConstant::CONF_USER_NAME, DBConstant::CONF_PASSWORD);
+            foreach ($confKeyList as $confKey)
+            {
+               if(!array_key_exists($confKey, $dbConf))
+               {
+                   ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'There is not conf key: ' . $confKey);
+                   return false;
+               }
+            }
+            return true;
+        }
+
+        private function initDbConnection()
+        {
+            $this->connection = new \mysqli($this->serverIp, $this->userId, $this->password, $this->databaseName, $this->serverPort);
+            if ($this->connection->connect_errno)
+            {
+                $serverMsg = sprintf("Connect db server fail,Server IP <%s:%d,%s,%s,%s>",
+                    $this->serverIp, $this->serverPort, $this->userId, $this->password, $this->databaseName);
+                $errorMsg = '; error: ' . $this->connection->connect_error . ', errorNo: ' . $this->connection->errno;
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_EMERGENCY, $serverMsg . $errorMsg);
+
+                return false;
+            }
+
+            if (!$this->connection->set_charset(DBConstant::DB_CHARSET))
+            {
+                $errorNo = intval($this->connection->connect_errno);
+                $errorMsg = sprintf("Change db charset to <%s> failed.", DB_CHARSET);
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_EMERGENCY,
+                    sprintf("<%s,%d>", $errorMsg, $errorNo));
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private function closeDbConnection()
+        {
+            $this->connection->close();
+            unset($this->connection);
+            $this->connection = null;
+        }
+
+        public function closeAutoCommit()
+        {
+            $this->connection->autocommit(false);
+        }
+
+        public function openAutoCommit()
+        {
+            $this->connection->autocommit(true);
+        }
+
+        public function beginTransaction()
+        {
+            return $this->connection->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+        }
+
+        public function commit()
+        {
+            return $this->connection->commit();
+        }
+
+        public function rollback()
+        {
+            return $this->connection->rollback();
+        }
+
+        public function executeSql($sql, $dbParameters=array())
+        {
+            $stmt = $this->connection->stmt_init();
+            if (!$stmt->prepare($sql))
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, sprintf("execute sql Prepare<%s> failed,error code<%d>, error message<%s>",
+                    $sql, $this->connection->errno, $this->connection->error));
+                $stmt->close();
+                return false;
+            }
+
+            if (!$this->bindParameters($stmt, $dbParameters))
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, sprintf("execute sql Bind parameters<%s> failed,error code<%d>, error message<%s>",
+                    $sql, $this->connection->errno, $this->connection->error));
+                $stmt->close();
+                return false;
+            }
+
+            if (!$stmt->execute())
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, sprintf("Execute sql<%s> failed,error code<%d>, error message<%s>",
+                    $sql, $this->connection->errno, $this->connection->error));
+                $stmt->close();
+
+                return false;
+            }
+
+            $changedRecordNumber = $stmt->affected_rows;
+            $stmt->close();
+
+            return $changedRecordNumber;
+        }
+
+        public function querySql($sql, $dbParameters=array())
+        {
+            $queryResults = array();
+            $queryStmt = $this->connection->stmt_init();
+            if(!$queryStmt)
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR,
+                    sprintf("Prepare query sql <%s> failed, error code<%d>, error message<%s>.",
+                        $sql, $this->connection->errno, $this->connection->error));
+                $queryStmt->close();
+                return false;
+            }
+            if (!$queryStmt->prepare($sql))
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR,
+                    sprintf("querySql prepare<%d,%s>", $this->connection->errno, $this->connection->error));
+                $queryStmt->close();
+                return false;
+            }
+
+            if(count($dbParameters))
+            {
+                if (!$this->bindParameters($queryStmt, $dbParameters))
+                {
+                    ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR,
+                        sprintf("query sql bind<%d,%s>", $this->connection->errno, $this->connection->error));
+                    $queryStmt->close();
+                    return false;
+                }
+            }
+
+            if (!$queryStmt->execute())
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR,
+                    sprintf("query sql exe<%d,%s>", $this->connection->errno, $this->connection->error));
+                $queryStmt->close();
+                return false;
+            }
+
+            $queryStmt->store_result();
+            while ($assoc_array = $this->fetchAssocStatement($queryStmt))
+            {
+                $queryResults[] = $assoc_array;
+            }
+
+            $queryStmt->close();
+
+            return $queryResults;
+        }
+
+        private function bindParameters($stmt, $dbParameters)
+        {
+            $parameterArray = array();
+            $parameterArray[] = $this->getParameterTypes($dbParameters);
+            foreach ($dbParameters as $dbParameter)
+            {
+                $parameterArray[] = &$dbParameter->value;
+            }
+
+            return $this->callFunction($stmt, "bind_param", $parameterArray);
+        }
+
+        private function getParameterTypes($dbParameters)
+        {
+            $typeString = "";
+            foreach ($dbParameters as $dbParameter)
+            {
+                $typeString .= $dbParameter->getType();
+            }
+
+            return $typeString;
+        }
+
+        private function fetchAssocStatement($stmt)
+        {
+            if ($stmt->num_rows > 0)
+            {
+                $result = array();
+                $md = $stmt->result_metadata();
+                $params = array();
+                while ($field = $md->fetch_field())
+                {
+                    $params[] = &$result[$field->name];
+                }
+
+                $this->callFunction($stmt, 'bind_result', $params);
+                if ($stmt->fetch())
+                {
+                    return $result;
+                }
+            }
+
+            return null;
+        }
+
+        private function callFunction($classInstance, $functionName, $parameters)
+        {
+            return call_user_func_array(array($classInstance, $functionName), $parameters);
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getServerIp()
+        {
+            return $this->serverIp;
+        }
+
+        /**
+         * @param mixed $serverIp
+         */
+        public function setServerIp($serverIp)
+        {
+            $this->serverIp = $serverIp;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getServerPort()
+        {
+            return $this->serverPort;
+        }
+
+        /**
+         * @param mixed $serverPort
+         */
+        public function setServerPort($serverPort)
+        {
+            $this->serverPort = $serverPort;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getUserId()
+        {
+            return $this->userId;
+        }
+
+        /**
+         * @param mixed $userId
+         */
+        public function setUserId($userId)
+        {
+            $this->userId = $userId;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getPassword()
+        {
+            return $this->password;
+        }
+
+        /**
+         * @param mixed $password
+         */
+        public function setPassword($password)
+        {
+            $this->password = $password;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getDatabaseName()
+        {
+            return $this->databaseName;
+        }
+
+        /**
+         * @param mixed $databaseName
+         */
+        public function setDatabaseName($databaseName)
+        {
+            $this->databaseName = $databaseName;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getConnection()
+        {
+            return $this->connection;
+        }
+
+        /**
+         * @param mixed $connection
+         */
+        public function setConnection($connection)
+        {
+            $this->connection = $connection;
+        }
+
+    }

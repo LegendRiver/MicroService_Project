@@ -1,0 +1,224 @@
+<?php
+
+namespace DBService\Business;
+
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Logger\ServerLogger;
+use CommonMoudle\Service\ServiceBase;
+use DBService\Constant\OrionDBQueryParamKey;
+use DBService\Constant\ServiceAPIConstant;
+use DBService\Manager\OrionDB\DuplicateTaskDBManager;
+use DBService\Common\OrionDBServiceResult;
+use DBService\Constant\OrionDBStatusCode;
+
+class DuplicateTaskBasicService extends ServiceBase
+{
+	private $duplicateTaskDb;
+
+	public function __construct()
+	{
+		$this->duplicateTaskDb = new DuplicateTaskDBManager();
+	}
+
+	private function ifLineValueNull($value, $response)
+	{
+		foreach ($value as $lineKey => $lineValue)
+		{
+			if (empty($lineValue))
+			{
+				ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'The insert value could not be null.');
+				$response->setErrorCode(OrionDBStatusCode::INSERT_DUPLICATE_TASK_VALUE_NULL);
+				return $response;
+			}
+		}
+	}
+
+	private function dbCountCharge($dbCount, $response)
+	{
+		if ($dbCount <= 0)
+		{
+			ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'The count is less than 0.');
+			$response->setErrorCode(OrionDBStatusCode::DUPLICATE_TASK_COUNT_ERROR);
+			return $response;
+		}
+	}
+
+	public function insertDuplicateTask($param)
+	{
+		$response = new OrionDBServiceResult();
+
+		$dbField = $param['dbField'] = ['task_name', 'user_id', 'status', 'root_path', 'json_name', 'create_time', 'complete_time'];
+		$dbValue = $param['dbValue'] = [
+											[1, 1, 1, '/root/1', '1.json', time(), 1],
+											[2, 2, 2, '/root/2', '2.json', time(), 2]
+										];
+
+		$dbCount = count($dbField);
+		$this->dbCountCharge($dbCount, $response);
+		$this->isFieldInDb($param['dbField'], $dbField, $response);
+		foreach ($dbValue as $key => $value)
+		{
+			if (count($value) != $dbCount)
+			{
+				ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'The insert value count is not equel to the dbCount.');
+				$response->setErrorCode(OrionDBStatusCode::INSERT_DUPLICATE_TASK_COUNT_ERROR);
+				return $response;
+			}
+			$this->ifLineValueNull($value, $response);
+		}
+		$db = new DuplicateTaskDBManager();
+		$result = $db->insertDuplicateTask($dbField, $dbValue);
+		if (false === $result)
+		{
+			$response->setErrorCode(OrionDBStatusCode::INSERT_DUPLICATE_TASK_FAIL);
+			return $response;
+		}
+		$response->setData($result);
+		return $response;
+	}
+
+	private function isFieldInDb($paramField, $field, $response)
+	{
+		foreach ($paramField as $paramValue)
+		{
+			if (!in_array($paramValue, $field))
+			{
+				ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'The parameter '. $paramValue .' is not in the table duplicate_task.');
+				$response->setErrorCode(OrionDBStatusCode::UPDATE_DUPLICATE_TASK_PARAM_NULL);
+				return $response;
+			}
+		}
+	}
+
+	public function updateDuplicateTask($param)
+	{
+		$updateField = $param['updateField'] = ['task_name', 'user_id', 'status', 'root_path', 'json_name', 'create_time', 'complete_time'];
+		$updateValue = $param['updateValue'] = [1, 1, 1, '/root/1', '1.json', 1, 1];
+		$whereField = $param['whereField'] = ['task_name', 'user_id', 'status', 'root_path', 'json_name', 'create_time', 'complete_time'];
+		$whereValue = $param['whereValue'] = [1212, 1212, 1517641837, 1517641837, 1517641837, 1517641837, 1517641837];
+
+		$response = new OrionDBServiceResult();
+		$dbUpdateCount = count($updateField);
+		$dbWhereCount = count($whereField);
+		$this->dbCountCharge($dbUpdateCount, $response);
+		$this->dbCountCharge($dbWhereCount, $response);
+		$this->isFieldInDb($param['updateField'], $updateField, $response);
+		$this->isFieldInDb($param['whereField'], $whereField, $response);
+
+		$db = new DuplicateTaskDBManager();
+		$result = $db->updateDuplicateTask($updateField, $updateValue, $whereField, $whereValue);
+
+		if (false === $result)
+		{
+			$response->setErrorCode(OrionDBStatusCode::UPDATE_DUPLICATE_TASK_FAIL);
+			return $response;
+		}
+		if (0 == $result)
+		{
+			$response->setErrorCode(OrionDBStatusCode::UPDATE_DUPLICATE_TASK_REPEAT);
+			return $response;
+		}
+		$response->setData($result);
+		return $response;
+	}
+
+	public function selectTaskByUserId($param)
+	{
+		$response = new OrionDBServiceResult();
+		if(!array_key_exists(OrionDBQueryParamKey::DUMPLICATE_TASK_USER_ID, $param))
+		{
+			ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'Failed to accept parameter userId.');
+			$response->setErrorCode(OrionDBStatusCode::SELECT_DUPLICATE_TASK_USER_ID_EMPTY);
+			return $response;
+		}
+		$userId = $param[OrionDBQueryParamKey::DUMPLICATE_TASK_USER_ID];
+		$db = new DuplicateTaskDBManager();
+		$task = $db->selectTaskByUserId($userId);
+
+		if(false === $task)
+		{
+			ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'Failed to select duplicate_task by userId.');
+			$response->setErrorCode(OrionDBStatusCode::SELECT_DUMPLICATE_TASK_FAIL);
+			return $response;
+		}
+		$taskList = array();
+		$taskList['dataField'] = array
+		(
+			ServiceAPIConstant::DUPLICATE_TASK_ID,
+			ServiceAPIConstant::DUPLICATE_TASK_TASK_NAME,
+			ServiceAPIConstant::DUPLICATE_TASK_CREATE_TIME,
+			ServiceAPIConstant::DUPLICATE_TASK_COMPLETE_TIME,
+			ServiceAPIConstant::DUPLICATE_TASK_STATUS,
+			ServiceAPIConstant::DUPLICATE_TASK_STATUS_DESCRIPTION
+		);
+		foreach ($task as $taskKey => $taskValue)
+		{
+			$taskList['valueField'][$taskKey][] = $taskValue->getId();
+			$taskList['valueField'][$taskKey][] = $taskValue->getTaskName();
+			$taskList['valueField'][$taskKey][] = $taskValue->getCreateTime();
+			$taskList['valueField'][$taskKey][] = $taskValue->getCompleteTime();
+			$taskList['valueField'][$taskKey][] = $taskValue->getStatus();
+			$taskList['valueField'][$taskKey][] = $taskValue->getDescription();
+		}
+			$response->setData($taskList);
+			return $response;
+	}
+
+	public function selectTaskByStatus($param)
+	{
+		$response = new OrionDBServiceResult();
+		if(!array_key_exists(OrionDBQueryParamKey::DUMPLICATE_TASK_STATUS, $param))
+		{
+			ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'Failed to accept parameter status.');
+			$response->setErrorCode(OrionDBStatusCode::SELECT_DUPLICATE_TASK_STATUS_EMPTY);
+			return $response;
+		}
+		$status = $param[OrionDBQueryParamKey::DUMPLICATE_TASK_STATUS];
+		$db = new DuplicateTaskDBManager();
+		$task = $db->selectTaskByStatus($status);
+
+		if(false === $task)
+		{
+			ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'Failed to select duplicate_task by status.');
+			$response->setErrorCode(OrionDBStatusCode::SELECT_DUMPLICATE_TASK_FAIL);
+			return $response;
+		}
+		$taskList = array();
+		$taskList['dataField'] = array
+		(
+			ServiceAPIConstant::DUPLICATE_TASK_ID,
+			ServiceAPIConstant::DUPLICATE_TASK_TASK_NAME,
+			ServiceAPIConstant::DUPLICATE_TASK_CREATE_TIME,
+			ServiceAPIConstant::DUPLICATE_TASK_ROOT_PATH,
+			ServiceAPIConstant::DUPLICATE_TASK_JOSN_NAME,
+			ServiceAPIConstant::DUPLICATE_TASK_USER_ID
+		);
+		foreach ($task as $taskKey => $taskValue)
+		{
+			$taskList['valueField'][$taskKey][] = $taskValue->getId();
+			$taskList['valueField'][$taskKey][] = $taskValue->getTaskName();
+			$taskList['valueField'][$taskKey][] = $taskValue->getCreateTime();
+			$taskList['valueField'][$taskKey][] = $taskValue->getRootPath();
+			$taskList['valueField'][$taskKey][] = $taskValue->getJsonName();
+			$taskList['valueField'][$taskKey][] = $taskValue->getUserId();
+		}
+		$response->setData($taskList);
+		return $response;
+	}
+
+	public function selectTaskAll()
+	{
+		$response = new OrionDBServiceResult();
+
+		$db = new DuplicateTaskDBManager();
+		$result = $db->selectTaskAll();
+
+		if(false === $result)
+		{
+			$response->setErrorCode(OrionDBStatusCode::SELECT_DUMPLICATE_TASK_FAIL);
+			return $response;
+		}
+		$response->setData($result);
+		return $response;
+	}
+}

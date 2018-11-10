@@ -1,0 +1,19 @@
+<?php
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
+
+use FBBasicService\Facade\AdFacade;
+use FBBasicService\Common\APIInit;
+APIInit::init();
+
+getAdTypeTest();
+
+function getAdTypeTest()
+{
+//    $adId = '23842733040020762';
+//    $adId = '23842751188900070';
+//    $adId = '23842677883720758';
+    $adId = '23842744513020008';
+    $adType = AdFacade::getAdType($adId);
+
+    print_r($adType);
+}

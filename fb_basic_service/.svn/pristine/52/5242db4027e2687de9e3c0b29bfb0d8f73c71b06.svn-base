@@ -1,0 +1,78 @@
+{
+  "requestParamMap":[
+    {
+      "accountInfo": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "queryAccountById",
+        "isAuth": false
+      },
+      "adType": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "getAdType",
+        "isAuth": false
+      },
+      "firstAd": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "getFirstAdId",
+        "isAuth": false
+      },
+      "adsetAllField": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "getAdsetAllField",
+        "isAuth": false
+      },
+      "creativeAllField": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "getCreativeAllFields",
+        "isAuth": false
+      },
+      "uploadVideo": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "uploadVideo",
+        "isAuth": false
+      },
+      "uploadImage": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "uploadImage",
+        "isAuth": false
+      },
+      "createAdset": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "createAdsetByField",
+        "isAuth": false
+      },
+      "duplicateAdset": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "duplicateAdset",
+        "isAuth": false
+      },
+      "firstVideoThumb": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "queryVideoFirstThumb",
+        "isAuth": false
+      },
+      "createAdByCreative": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "createAdByCreativeField",
+        "isAuth": false
+      },
+      "accountGEOInsight": {
+        "serviceName": "QueryInsightService",
+        "className": "\\FBBasicService\\Business\\FBInsightService",
+        "functionName": "queryAccountCountryBDInsight",
+        "isAuth": false
+      }
+    }
+  ]
+}

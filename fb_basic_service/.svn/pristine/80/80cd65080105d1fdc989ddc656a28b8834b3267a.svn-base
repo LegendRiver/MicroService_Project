@@ -1,0 +1,15 @@
+{
+  "serviceConfig":[
+    {
+      "serviceName": "QueryNodeService",
+      "classInfo": [
+        {
+          "className": "\\FBBasicService\\Business\\FBNodeService",
+          "functionList": [
+            "queryAccountById"
+          ]
+        }
+      ]
+    }
+  ]
+}

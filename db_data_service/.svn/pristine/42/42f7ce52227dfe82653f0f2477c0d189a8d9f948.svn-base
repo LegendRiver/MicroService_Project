@@ -1,0 +1,25 @@
+{
+  "requestParamMap":[
+    {
+      "orionProduct": {
+        "serviceName": "OrionProductService",
+        "className": "\\DBService\\Business\\OrionBasicService",
+        "functionName": "getValidProductInfo"
+      }
+    },
+    {
+      "accountInfo": {
+        "serviceName": "OrionProductService",
+        "className": "\\DBService\\Business\\OrionBasicService",
+        "functionName": "getAccountsByProductId"
+      }
+    },
+    {
+      "userInfo": {
+        "serviceName": "QueryUserService",
+        "className": "\\DBService\\Business\\UserBasicService",
+        "functionName": "getUserData"
+      }
+    }
+  ]
+}

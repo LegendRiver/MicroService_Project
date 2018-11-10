@@ -1,0 +1,7 @@
+<?php
+namespace OrionService\Constant;
+
+class OrionServiceConstant
+{
+    const CHECK_TOKEN_FAILED = 50001;
+}

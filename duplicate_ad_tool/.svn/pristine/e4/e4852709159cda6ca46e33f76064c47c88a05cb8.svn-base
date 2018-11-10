@@ -1,0 +1,3 @@
+#!/bin/sh
+# 需先赋予755权限
+    nohup /usr/bin/php '/Users/caijia/workplace/orion/media_platform/duplicate_ad_tool/main/b.php'  > /dev/null &

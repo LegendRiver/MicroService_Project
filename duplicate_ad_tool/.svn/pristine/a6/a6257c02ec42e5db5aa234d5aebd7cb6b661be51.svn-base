@@ -1,0 +1,8 @@
+<?php
+
+namespace DuplicateAd\FBManager;
+
+class FBServiceFacade
+{
+
+}

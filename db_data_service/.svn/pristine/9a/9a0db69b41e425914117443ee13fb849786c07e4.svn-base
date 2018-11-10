@@ -1,0 +1,26 @@
+{
+  "serviceConfig":[
+    {
+      "serviceName": "QueryOrionProductService",
+      "classInfo": [
+        {
+          "className": "\\DBService\\Business\\OrionBasicService",
+          "functionList": [
+            "getProductStateData"
+          ]
+        }
+      ]
+    },
+    {
+      "serviceName": "QueryUserService",
+      "classInfo": [
+        {
+          "className": "\\DBService\\Business\\UserBasicService",
+          "functionList": [
+            "getUserData"
+          ]
+        }
+      ]
+    }
+  ]
+}

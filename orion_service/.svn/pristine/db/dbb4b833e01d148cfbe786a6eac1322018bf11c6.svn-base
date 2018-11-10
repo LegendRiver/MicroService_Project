@@ -1,0 +1,49 @@
+<?php
+namespace OrionService\FB;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/18
+ * Time: 上午10:45
+ */
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Helper\CommonHelper;
+use CommonMoudle\Helper\JsonFileHelper;
+use CommonMoudle\Helper\ServiceHelper;
+use CommonMoudle\Http\HttpClient;
+use CommonMoudle\Http\RequestInfo;
+use CommonMoudle\Logger\ServerLogger;
+use CommonMoudle\Service\ServiceBaseConstant;
+use OrionService\Constant\SendRequestParamConstant;
+use OrionService\Constant\ServiceEndpointConstant;
+
+/**
+ * Class FBServiceFacade
+ * 目前只支持单服务器调用服务，后续需要多服务要重构调用服务，智能选择服务器
+ */
+class FBServiceFacade
+{
+    const FB_SERVER_KEY = 'fb_basic_service';
+
+    public static function queryAccountById($accountId)
+    {
+        $queryParam = array(
+            SendRequestParamConstant::FB_SERVICE_ACCOUNT_ID => $accountId
+        );
+
+        $dbResponse = HttpClient::instance()->sendRequest(self::FB_SERVER_KEY, RequestInfo::METHOD_GET,
+            ServiceEndpointConstant::QUERY_FB_ACCOUNT_INFO, $queryParam);
+
+        if(!ServiceHelper::checkResponse($dbResponse))
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#queryAccountById#Failed to check response');
+            return false;
+        }
+
+        $responseData = JsonFileHelper::decodeJsonString($dbResponse->getBody());
+        $accountData = CommonHelper::getArrayValueByKey(ServiceBaseConstant::BODY_DATA, $responseData);
+
+        return $accountData;
+    }
+}

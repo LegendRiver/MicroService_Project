@@ -1,0 +1,27 @@
+<?php
+namespace FBBasicService\Constant;
+
+class FBParamValueConstant
+{
+    const QUERY_ACCOUNT_AMOUNT_LIMIT = 10000;
+    const QUERY_CAMPAIGN_AMOUNT_LIMIT = 10000;
+    const QUERY_COMMON_AMOUNT_LIMIT = 50000;
+    const QUERY_AD_AMOUNT_LIMIT = 50000;
+    const QUERY_ADSET_AMOUNT_LIMIT = 10000;
+
+    const CAMPAIGN_MAX_NUM = 5000;
+
+    const CREATIVE_TYPE_SINGLE_IMAGE = 'single_image';
+    const CREATIVE_TYPE_SINGLE_VIDEO = 'single_video';
+    const CREATIVE_TYPE_CAROUSEL_IMAGE = 'carousel_image';
+    const CREATIVE_TYPE_CAROUSEL_VIDEO = 'carousel_video';
+
+    const EFFECTIVE_STATUS_ACTIVE = 1;
+    const EFFECTIVE_STATUS_REVIEW = 2;
+
+    const VIDEO_TYPE_SLIDESHOW = 0;
+    const VIDEO_TYPE_COMMON = 1;
+
+    const SLIDESHOW_DURATION_TIME_DEFAULT = 1000;
+    const SLIDESHOW_TRANSITION_TIME_DEFAULT = 200;
+}

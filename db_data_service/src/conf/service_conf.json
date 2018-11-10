@@ -1,0 +1,43 @@
+{
+  "serviceConfig":[
+    {
+      "serviceName": "OrionProductService",
+      "classInfo": [
+        {
+          "className": "\\DBService\\Business\\OrionBasicService",
+          "functionList": [
+            "getValidProductInfo",
+            "getAccountsByProductId"
+          ]
+        }
+      ]
+    },
+    {
+      "serviceName": "QueryUserService",
+      "classInfo": [
+        {
+          "className": "\\DBService\\Business\\UserBasicService",
+          "functionList": [
+            "getUserData",
+            "getUserById"
+          ]
+        }
+      ]
+    },
+    {
+      "serviceName": "DuplicateTaskService",
+      "classInfo": [
+        {
+          "className": "\\DBService\\Business\\DuplicateTaskBasicService",
+          "functionList": [
+            "insertDuplicateTask",
+            "selectTaskByUserId",
+            "selectTaskByStatus",
+            "selectTaskAll",
+            "updateDuplicateTask"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/6
+ * Time: 下午2:45
+ */
+
+namespace DuplicateAd\Constant;
+
+
+class DAEndpointConstant
+{
+    const QUERY_FB_FIRST_AD = 'firstAd';
+    const QUERY_FB_AD_TYPE = 'adType';
+
+    const QUERY_ADSET_FIELD = 'adsetAllField';
+    const QUERY_CREATIVE_FIELD = 'creativeAllField';
+
+    const QUERY_DUPLICATE_TASK_FIELD = 'selectTaskByStatus';
+    const UPDATE_DUPLICATE_TASK_FIELD = 'updateTask';
+
+    const UPLOAD_IMAGE = 'uploadImage';
+    const UPLOAD_VIDEO = 'uploadVideo';
+
+    const CREATE_ADSET = 'createAdset';
+    const DUPLICATE_ADSET = 'duplicateAdset';
+
+    const FIRST_VIDEO_THUMB = 'firstVideoThumb';
+    const CREATE_AD_BY_CREATIVE = 'createAdByCreative';
+}

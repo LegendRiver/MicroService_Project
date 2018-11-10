@@ -1,0 +1,49 @@
+<?php
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
+
+use DuplicateAd\FBManager\FBServiceFacade;
+use DuplicateAd\Business\DuplicateHandler;
+
+duplicateHandlerTest();
+//uploadImageTest();
+
+function uploadImageTest()
+{
+    $imagePath = '/var/www/html/material/unzip';
+    $accountId = 'act_958784954303330';
+    FBServiceFacade::uploadImage($accountId, $imagePath);
+}
+
+function getAdsetAllFieldTest()
+{
+//    $adsetId = '23842671908120758';
+//    $adsetField = FBServiceFacade::getAdsetAllField($adsetId);
+
+    $adId = '23842706987890192';
+    $adField = FBServiceFacade::getCreativeField($adId);
+    print_r($adField);
+
+}
+
+function getAdTypeTest()
+{
+    $adId = '23842744513020008';
+    $adType = FBServiceFacade::getAdType($adId);
+    print_r($adType);
+}
+
+function duplicateHandlerTest()
+{
+    $rootPath = '/Users/yuanyuan/workspace/RIVER/apacheDirTest';
+    $jsonFile = 'starmaker0210.json';
+    $handler = new DuplicateHandler($rootPath, $jsonFile);
+    $handler->duplicateAd();
+}
+
+function copyAdsetApiTest()
+{
+    $adsetId = '23842715117470233';
+    $newName = 'testName';
+    $adsetId = FBServiceFacade::copyAdsetByCopyAPI($adsetId, $newName);
+    print_r($adsetId);
+}

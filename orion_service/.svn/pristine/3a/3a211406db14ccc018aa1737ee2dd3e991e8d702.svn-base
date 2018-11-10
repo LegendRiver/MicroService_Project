@@ -1,0 +1,19 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/25
+ * Time: 下午5:05
+ */
+
+namespace OrionService\Constant;
+
+
+class SendRequestParamConstant
+{
+    const DB_SERVICE_PRODUCT_ID = 'productId';
+
+    const FB_SERVICE_ACCOUNT_ID = 'accountId';
+    const FB_SERVICE_START_DATE = 'startDate';
+    const FB_SERVICE_END_DATE = 'endDate';
+}

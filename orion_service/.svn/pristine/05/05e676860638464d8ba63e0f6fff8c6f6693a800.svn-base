@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/18
+ * Time: 上午10:45
+ */
+
+/**
+ * Class FBServiceFacade
+ * 目前只支持单服务器调用服务，后续需要多服务要重构调用服务，智能选择服务器
+ */
+class FBServiceFacade
+{
+    const FB_SERVER_KEY = 'fb_basic_service';
+}

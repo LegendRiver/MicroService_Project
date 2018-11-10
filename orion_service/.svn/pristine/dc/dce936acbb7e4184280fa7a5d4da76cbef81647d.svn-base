@@ -1,0 +1,18 @@
+{
+  "requestParamMap":[
+    {
+      "productBasicInfo": {
+        "serviceName": "OrionProductService",
+        "className": "\\OrionService\\Business\\ProductService",
+        "functionName": "queryValidProduct"
+      }
+    },
+    {
+      "accountBasicInfo": {
+        "serviceName": "OrionProductService",
+        "className": "\\OrionService\\Business\\ProductService",
+        "functionName": "queryAccountByProductId"
+      }
+    }
+  ]
+}

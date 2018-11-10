@@ -1,0 +1,19 @@
+<?php
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
+use CommonMoudle\Http\HttpClient;
+initHttpServer();
+
+
+fbAccountInfoTest();
+
+function fbAccountInfoTest()
+{
+
+}
+
+function initHttpServer()
+{
+    $confDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src/conf';
+    $serverConfFile = $confDir . DIRECTORY_SEPARATOR . 'dependence_service_conf.json';
+    HttpClient::instance()->initServerInfo($serverConfFile);
+}

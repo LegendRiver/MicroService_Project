@@ -1,0 +1,15 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/18
+ * Time: 下午3:21
+ */
+
+namespace DBService\Constant;
+
+
+class OrionDBStatusCode
+{
+
+}

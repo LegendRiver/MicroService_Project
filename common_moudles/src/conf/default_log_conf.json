@@ -1,0 +1,9 @@
+{
+  "logConfig": [
+    {
+      "logModule": "default",
+      "logPath": "/var/www/html/test_environment/log/default_log",
+      "logLevel": 4
+    }
+  ]
+}

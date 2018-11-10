@@ -1,0 +1,8 @@
+{
+  "autoload": {
+    "psr-4": {
+      "OrionService\\": "src/"
+    },
+    "files": ["init/OrionServiceInit.php"]
+  }
+}

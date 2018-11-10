@@ -1,0 +1,52 @@
+<?php
+namespace OrionService\Business;
+
+use OrionService\Common\OrionServiceResult;
+use OrionService\Constant\OrionServiceStateCode;
+use OrionService\Constant\QueryParamConstant;
+use OrionService\DB\DBServiceFacade;
+use OrionService\Handler\ProductServiceHandler;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/25
+ * Time: 上午10:00
+ */
+class ProductService
+{
+    public function queryValidProduct($param)
+    {
+        $response = new OrionServiceResult();
+
+        $productData = DBServiceFacade::queryValidProduct();
+        if(false === $productData)
+        {
+            $response->setErrorCode(OrionServiceStateCode::QUERY_PRODUCT_FAILED);
+            return $response;
+        }
+
+        $response->setData($productData);
+        return $response;
+    }
+
+    public function queryAccountByProductId($param)
+    {
+        $response = new OrionServiceResult();
+        if(!array_key_exists(QueryParamConstant::PRODUCT_ID, $param))
+        {
+            return array();
+        }
+        $productId = $param[QueryParamConstant::PRODUCT_ID];
+
+        $accountInfo = ProductServiceHandler::getAccountData($productId);
+
+        $response->setData($accountInfo);
+        return $response;
+    }
+
+    public function queryAccountGeoInsight($param)
+    {
+
+    }
+}

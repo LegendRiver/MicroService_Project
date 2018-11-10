@@ -1,0 +1,15 @@
+<?php
+namespace OrionService\Common;
+
+use CommonMoudle\Service\ServiceResult;
+use OrionService\Constant\OrionServiceConstant;
+
+class OrionServiceResult extends ServiceResult
+{
+    protected function getSubMessage()
+    {
+        return array(
+            OrionServiceConstant::CHECK_TOKEN_FAILED => 'The token is invalid.'
+        );
+    }
+}

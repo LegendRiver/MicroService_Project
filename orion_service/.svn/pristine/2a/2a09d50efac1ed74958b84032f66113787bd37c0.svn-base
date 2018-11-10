@@ -1,0 +1,12 @@
+{
+  "fb_basic_service":
+  {
+    "server": "34.215.220.228",
+    "port": 6010
+  },
+  "db_service":
+  {
+    "server": "34.215.220.228",
+    "port": 6020
+  }
+}

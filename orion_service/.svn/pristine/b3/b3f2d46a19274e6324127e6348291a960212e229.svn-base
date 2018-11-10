@@ -1,0 +1,62 @@
+<?php
+
+namespace OrionService\Business;
+
+use OrionService\Constant\CommonConstant;
+use OrionService\Constant\InField\DBUserInfoField;
+use OrionService\Constant\OrionServiceStateCode;
+use OrionService\Constant\OutField\UserInfoField;
+use OrionService\Constant\QueryParamConstant;
+use CommonMoudle\Helper\JWTHelper;
+use OrionService\Common\OrionServiceResult;
+use OrionService\DB\DBUserServiceFacade;
+
+
+class UserAuthService
+{
+	public function validUser($param)
+	{
+		$response = new OrionServiceResult();
+		if (!array_key_exists(QueryParamConstant::USER_NAME, $param) || !array_key_exists(QueryParamConstant::USER_PASSWORD, $param))
+		{
+			$response->setErrorCode(OrionServiceStateCode::QUERY_USER_BY_NAME_PARAMETER_LOSS);
+			return $response;
+		}
+		$userName = $param[QueryParamConstant::USER_NAME];
+		$pwd = $param[QueryParamConstant::USER_PASSWORD];
+		$isSuccess = false;
+		$token = '';
+		$data = array();
+		$password = md5(md5($pwd));
+		$dbData = DBUserServiceFacade::queryUserByName($userName);
+
+		$userName = $dbData[DBUserInfoField::NAME];
+
+		$payload = array(
+			CommonConstant::IAT => time(),
+			CommonConstant::EXP => time() + 60*30,
+			CommonConstant::USERNAME => $userName
+		);
+		$secretKey = CommonConstant::JWT_KEY;
+		if (empty($dbData))
+		{
+			$response->setErrorCode(OrionServiceStateCode::QUERY_USER_BY_NAME_FAILED);
+			return $response;
+		}
+		if (!empty($dbData) && $dbData[DBUserInfoField::NAME] == $userName && $dbData[DBUserInfoField::PASSWORD] == $password)
+		{
+			$isSuccess = true;
+			$token = JWTHelper::genJWT($payload, $secretKey);
+		}
+		else
+		{
+			$response->setErrorCode(OrionServiceStateCode::QUERY_USER_BY_NAME_PARAMETER_WRONG);
+			return $response;
+		}
+		$data[UserInfoField::USERNAME] = $userName;
+		$data[UserInfoField::ISSUCCESS] = $isSuccess;
+		$data[UserInfoField::TOKEN] = $token;
+		$response->setData($data);
+		return $response;
+	}
+}

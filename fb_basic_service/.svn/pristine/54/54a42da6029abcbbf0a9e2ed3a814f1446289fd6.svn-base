@@ -1,0 +1,25 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/4
+ * Time: 上午11:54
+ */
+
+namespace FBBasicService\Constant;
+
+
+class FBServiceStatusCode
+{
+    const GET_FB_ACCOUNT_FAILED = 20001;
+    const QUERY_PARAM_INCOMPLETE = 20005;
+    const QUERY_INSIGHT_EMPTY = 20010;
+
+    const FAILED_AD_TYPE = 20015;
+    const EMPTY_AD_BY_ADSET = 20020;
+    const FAILED_AD_BY_ADSET = 20025;
+
+    const FAILED_ADSET_FIELDS = 20030;
+    const FAILED_QUERY_AD = 20035;
+    const FAILED_CREATIVE_FIELDS = 20040;
+}

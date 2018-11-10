@@ -1,0 +1,31 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: caijia
+ * Date: 18/1/25
+ * Time: 下午2:39
+ */
+
+namespace OrionService\Constant;
+
+
+class QueryParamConstant
+{
+    //ProductService
+    const PRODUCT_ID = 'productId';
+    const START_DATE = 'startDate';
+    const END_DATE = 'endDate';
+
+    //UserAuthService
+    const USER_NAME = 'userName';
+    const USER_PASSWORD = 'password';
+
+    //UploadMaterialService
+    const UPLOAD_FILE_DATA = 'dataContent';
+    const UPLOAD_USER_NAME = 'userName';
+    const UPLOAD_USER_ID = 'userId';
+    const UPLOAD_TASK_NAME = 'taskName';
+    const UPLOAD_POST_FILE_NAME = 'filename';
+
+
+}

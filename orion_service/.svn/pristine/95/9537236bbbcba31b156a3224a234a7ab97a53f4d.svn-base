@@ -1,0 +1,21 @@
+{
+  "requestParamMap":[
+    {
+      "productBasicInfo": {
+        "serviceName": "MockOrionService",
+        "className": "\\OrionService\\Mock\\MockService",
+        "functionName": "queryProductInfo"
+      },
+      "accountBasicInfo": {
+        "serviceName": "MockOrionService",
+        "className": "\\OrionService\\Mock\\MockService",
+        "functionName": "getAccountInfoByProductId"
+      },
+      "actGeoInsight": {
+        "serviceName": "MockOrionService",
+        "className": "\\OrionService\\Mock\\MockService",
+        "functionName": "getAccountCountryBDInsight"
+      }
+    }
+  ]
+}

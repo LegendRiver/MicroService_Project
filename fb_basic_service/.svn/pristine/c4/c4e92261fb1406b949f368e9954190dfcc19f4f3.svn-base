@@ -1,0 +1,21 @@
+{
+  "requestParamMap":[
+    {
+      "accountInfo": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "queryAccountById"
+      },
+      "adType": {
+        "serviceName": "QueryNodeService",
+        "className": "\\FBBasicService\\Business\\FBNodeService",
+        "functionName": "getAdType"
+      },
+      "accountGEOInsight": {
+        "serviceName": "QueryInsightService",
+        "className": "\\FBBasicService\\Business\\FBInsightService",
+        "functionName": "queryAccountCountryBDInsight"
+      }
+    }
+  ]
+}

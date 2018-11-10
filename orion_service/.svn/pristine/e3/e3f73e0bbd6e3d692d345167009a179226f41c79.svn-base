@@ -1,0 +1,19 @@
+<?php
+namespace OrionService\Common;
+
+use CommonMoudle\Service\ServiceResult;
+use OrionService\Constant\OrionServiceStateCode;
+
+class OrionServiceResult extends ServiceResult
+{
+    protected function getSubMessage()
+    {
+        return array(
+            OrionServiceStateCode::CHECK_TOKEN_FAILED => 'The token is invalid.',
+            OrionServiceStateCode::QUERY_PRODUCT_FAILED => 'Failed to query product by db service.',
+            OrionServiceStateCode::QUERY_USER_BY_NAME_FAILED => 'Failed to query user by db service using parameter userName.',
+            OrionServiceStateCode::QUERY_USER_BY_NAME_PARAMETER_LOSS => 'Failed to query user by db service as one of the parameter lossed or both.',
+            OrionServiceStateCode::QUERY_USER_BY_NAME_PARAMETER_WRONG => 'UserName or password wrong.'
+        );
+    }
+}

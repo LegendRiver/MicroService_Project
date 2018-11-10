@@ -1,0 +1,165 @@
+<?php
+namespace CommonMoudle\Service;
+
+use CommonMoudle\Constant\ErrorCodeConstant;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2017/12/29
+ * Time: 下午5:18
+ */
+class ServiceResult
+{
+    private $errorCode;
+
+    private $returnMessage;
+
+    private $data;
+
+    private $codeMessageMap;
+
+    public function __construct()
+    {
+        $this->errorCode = 200;
+        $this->returnMessage = "";
+        $this->data = array();
+        $this->initMessageMap();
+    }
+
+    public function getValue()
+    {
+        if(empty($this->returnMessage))
+        {
+            if(array_key_exists($this->errorCode, $this->codeMessageMap))
+            {
+                $this->returnMessage = $this->codeMessageMap[$this->errorCode];
+            }
+            else
+            {
+                $this->returnMessage = "";
+            }
+        }
+        return array(
+            "statusCode" => $this->errorCode,
+            "message" => $this->returnMessage,
+            "data" => $this->data,
+        );
+    }
+
+    private function initMessageMap()
+    {
+        $this->codeMessageMap=array(
+            100 => 'Continue',
+            101 => 'Switching Protocols',
+            200 => 'OK',
+            201 => 'Created',
+            202 => 'Accepted',
+            203 => 'Non-Authoritative Information',
+            204 => 'No Content',
+            205 => 'Reset Content',
+            206 => 'Partial Content',
+            300 => 'Multiple Choices',
+            301 => 'Moved Permanently',
+            302 => 'Found',
+            303 => 'See Other',
+            304 => 'Not Modified',
+            305 => 'Use Proxy',
+            306 => '(Unused)',
+            307 => 'Temporary Redirect',
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            402 => 'Payment Required',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            405 => 'Method Not Allowed',
+            406 => 'Not Acceptable',
+            407 => 'Proxy Authentication Required',
+            408 => 'Request Timeout',
+            409 => 'Conflict',
+            410 => 'Gone',
+            411 => 'Length Required',
+            412 => 'Precondition Failed',
+            413 => 'Request Entity Too Large',
+            414 => 'Request-URI Too Long',
+            415 => 'Unsupported Media Type',
+            416 => 'Requested Range Not Satisfiable',
+            417 => 'Expectation Failed',
+            500 => 'Internal Server Error',
+            501 => 'Not Implemented',
+            502 => 'Bad Gateway',
+            503 => 'Service Unavailable',
+            504 => 'Gateway Timeout',
+            505 => 'HTTP Version Not Supported');
+
+        $businessMap = $this->getBusinessMessageMap();
+
+        $this->codeMessageMap = $this->codeMessageMap + $businessMap;
+    }
+
+    private function getBusinessMessageMap()
+    {
+        $commonResult = array(
+            ErrorCodeConstant::CODE_PARSE_PARAM_FAILED => 'Parse param failed',
+            ErrorCodeConstant::CODE_CALL_SERVICE_EXCEPTION => 'Call service exception',
+            ErrorCodeConstant::CODE_CALL_SERVICE_EMPTY => 'The result of service is empty',
+        );
+
+        return $commonResult + $this->getSubMessage();
+    }
+
+    protected function getSubMessage()
+    {
+        return array();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getErrorCode()
+    {
+        return $this->errorCode;
+    }
+
+    /**
+     * @param mixed $errorCode
+     */
+    public function setErrorCode($errorCode)
+    {
+        $this->errorCode = $errorCode;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReturnMessage()
+    {
+        return $this->returnMessage;
+    }
+
+    /**
+     * @param mixed $returnMessage
+     */
+    public function setReturnMessage($returnMessage)
+    {
+        $this->returnMessage = $returnMessage;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param mixed $data
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
+
+
+}

@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^([^/]+) exportService.php?ServiceAlias=$1 [QSA,NC]

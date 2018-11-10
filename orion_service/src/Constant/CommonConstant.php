@@ -1,0 +1,19 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: caijia
+ * Date: 18/1/25
+ * Time: 下午2:44
+ */
+
+namespace OrionService\Constant;
+
+
+class CommonConstant
+{
+	const USERNAME = 'username';
+	const ID = 'id';
+
+    const DB_SERVER_KEY = 'db_service';
+    const FB_SERVER_KEY = 'fb_basic_service';
+}

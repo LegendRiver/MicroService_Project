@@ -1,0 +1,4 @@
+{
+  "saveZipPath": "/var/www/html/material/unzip",
+  "unzipPath": "/var/www/html/material/zip"
+}

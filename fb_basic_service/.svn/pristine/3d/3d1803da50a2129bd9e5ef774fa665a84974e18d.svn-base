@@ -1,0 +1,58 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/7
+ * Time: 下午3:50
+ */
+
+namespace FBBasicService\Business\Node;
+
+
+use FBBasicService\Constant\ServiceConstant\ImageResField;
+use FBBasicService\Constant\ServiceConstant\VideoResField;
+
+class NodeHelper
+{
+    public static function convertImageEntityList($imageList)
+    {
+        $imageArray = array();
+        foreach($imageList as $image)
+        {
+            $imageInfo = self::convertImageEntity($image);
+            $imageArray[] = $imageInfo;
+        }
+
+        return $imageArray;
+    }
+
+    public static function convertImageEntity($image)
+    {
+        $imageArray = array(
+            ImageResField::IMAGE_ID => $image->getId(),
+            ImageResField::IMAGE_HASH => $image->getImageHash(),
+            ImageResField::IMAGE_NAME => $image->getFileName(),
+        );
+        return $imageArray;
+    }
+
+    public static function convertVideoEntity($video)
+    {
+        $videoArray = array(
+            VideoResField::VIDEO_ID => $video->getVideoId(),
+        );
+        return $videoArray;
+    }
+
+    public static function convertVideoList($videoList)
+    {
+        $videoArray = array();
+        foreach ($videoList as $video)
+        {
+            $videoInfo = self::convertVideoEntity($video);
+            $videoArray[] = $videoInfo;
+        }
+
+        return $videoArray;
+    }
+}

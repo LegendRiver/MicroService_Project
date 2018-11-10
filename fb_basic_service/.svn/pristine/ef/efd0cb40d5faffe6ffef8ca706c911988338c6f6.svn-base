@@ -1,0 +1,21 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/25
+ * Time: 下午9:30
+ */
+
+namespace FBBasicService\Constant\ServiceConstant;
+
+
+class ResponseDataField
+{
+    const ACCOUNT_NAME = 'accountName';
+    const SPEND_CAP = 'spendCap';
+    const SPEND_AMOUNT = 'spendAmount';
+
+    const INSIGHT_DATA = 'insightData';
+
+    const AD_TYPE = 'adType';
+}

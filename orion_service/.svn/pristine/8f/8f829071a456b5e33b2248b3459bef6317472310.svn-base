@@ -1,0 +1,52 @@
+{
+  "requestParamMap":[
+    {
+      "productBasicInfo": {
+        "serviceName": "OrionProductService",
+        "className": "\\OrionService\\Business\\ProductService",
+        "functionName": "queryValidProduct",
+        "isAuth": true
+      }
+    },
+    {
+      "accountBasicInfo": {
+        "serviceName": "OrionProductService",
+        "className": "\\OrionService\\Business\\ProductService",
+        "functionName": "queryAccountByProductId",
+        "isAuth": true
+      }
+    },
+    {
+      "actGeoInsight": {
+        "serviceName": "OrionProductService",
+        "className": "\\OrionService\\Business\\ProductService",
+        "functionName": "queryAccountGeoInsight",
+        "isAuth": true
+      }
+    },
+    {
+      "userAuth": {
+        "serviceName": "OrionUserService",
+        "className": "\\OrionService\\Business\\UserAuthService",
+        "functionName": "validUser",
+        "isAuth": false
+      }
+    },
+    {
+      "materialUpload": {
+        "serviceName": "UploadMaterialService",
+        "className": "\\OrionService\\Business\\UploadMaterialService",
+        "functionName": "receiveMaterialZip",
+        "isAuth": true
+      }
+    },
+    {
+      "selectTaskByUserId": {
+        "serviceName": "DuplicateTaskService",
+        "className": "\\OrionService\\Business\\DuplicateTaskService",
+        "functionName": "selectTaskByUserId",
+        "isAuth": true
+      }
+    }
+  ]
+}

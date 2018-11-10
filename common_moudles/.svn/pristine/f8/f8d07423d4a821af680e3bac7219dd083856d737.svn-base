@@ -1,0 +1,52 @@
+<?php
+namespace CommonMoudle\Logger;
+
+use CommonMoudle\Constant\DirectoryConstant;
+
+class PathManager
+{
+    private $srcPath;
+
+    private $confPath;
+
+    private static $instance = null;
+
+    public static function instance()
+    {
+        if(is_null(static::$instance))
+        {
+            static::$instance = new static();
+        }
+
+        return static::$instance;
+    }
+
+    private function __construct()
+    {
+        $this->srcPath = dirname(__DIR__);
+        $this->confPath = $this->srcPath . DIRECTORY_SEPARATOR . DirectoryConstant::DIR_CONF;
+    }
+
+    public function getDefaultLogConfigPath()
+    {
+        return $this->confPath . DIRECTORY_SEPARATOR . DirectoryConstant::DEFAULT_LOG_CONF_FILE;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSrcPath()
+    {
+        return $this->srcPath;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getConfPath()
+    {
+        return $this->confPath;
+    }
+
+}

@@ -1,0 +1,28 @@
+<?php
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
+
+use DBService\Manager\OrionDB\UserDBManager;
+
+
+UserBasicService();
+
+function userQueryTest()
+{
+	$db = new UserDBManager();
+	$result = $db->selectAllUser();
+	print_r($result);
+}
+
+function UserBasicService()
+{
+	$fieldArray = array();
+	$param = array
+	(
+		'name' => 'cai'
+	);
+	$name = $param['name'];
+	$db = new UserDBManager();
+	$result = $db->selectUserByName($fieldArray, $name);
+	print_r($result);
+
+}

@@ -1,0 +1,7 @@
+{
+  "serverIP": "52.42.202.255",
+  "port": "3306",
+  "dbName": "eli_orion",
+  "userName": "test_user",
+  "password": "eli16ads"
+}

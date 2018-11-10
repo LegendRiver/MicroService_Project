@@ -1,0 +1,16 @@
+{
+  "serviceConfig":[
+    {
+      "serviceName": "OrionProductService",
+      "classInfo": [
+        {
+          "className": "\\OrionService\\Business\\ProductService",
+          "functionList": [
+            "queryValidProduct",
+            "queryAccountByProductId"
+          ]
+        }
+      ]
+    }
+  ]
+}

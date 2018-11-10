@@ -1,0 +1,39 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/6
+ * Time: 上午10:38
+ */
+
+namespace DuplicateAd\Business;
+
+
+use DuplicateAd\Constant\ConfConstant;
+
+class SingleCopyHelper extends AbstractCopyHelper
+{
+
+    protected function constructTextMap()
+    {
+        $imageMap = array();
+        foreach ($this->originalTextInfo as $info)
+        {
+            $imageName = $info[1];
+            $row = array(
+                ConfConstant::CSV_COL_IMAGE_NAME => $imageName,
+                ConfConstant::CSV_COL_MESSAGE => $info[2],
+                ConfConstant::CSV_COL_HEADLINE => $info[3],
+            );
+
+            if(count($info)>=5)
+            {
+                $row[ConfConstant::CSV_COL_DEEP_LINK] = $info[4];
+            }
+
+            $imageMap[$imageName] = $row;
+        }
+
+        return $imageMap;
+    }
+}

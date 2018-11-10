@@ -1,0 +1,14 @@
+{
+  "logConfig": [
+    {
+      "logModule": "default",
+      "logPath": "/var/www/html/test_environment/log/default_log",
+      "logLevel": 4
+    },
+    {
+      "logModule": "duplicate_ad_tool",
+      "logPath": "/var/www/html/test_environment/log/duplicate_ad_log",
+      "logLevel": 4
+    }
+  ]
+}

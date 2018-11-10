@@ -1,0 +1,209 @@
+<?php
+namespace CommonMoudle\Helper;
+
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Logger\ServerLogger;
+
+class FileHelper
+{
+    public static function getFileNameFromPath($path)
+    {
+      $baseName = basename($path);
+      $pos = strrpos($baseName, '.');
+      if(false === $pos)
+      {
+          return $baseName;
+      }
+      else
+      {
+          return substr($baseName, 0, $pos);
+      }
+    }
+
+    public static function getFileList($dir, $extend = '.')
+    {
+        //dir 最后不能带/
+        $fileArray = array();
+        $allFileNames = scandir($dir);
+
+        foreach($allFileNames as $fileName)
+        {
+            if ($fileName != "." && $fileName != ".." && strripos($fileName, $extend))
+            {
+                $filePath = $dir . DIRECTORY_SEPARATOR . $fileName;
+                $fileArray[] = $filePath;
+            }
+        }
+
+        return $fileArray;
+
+    }
+
+    public static function getSubDirList($dir)
+    {
+        $fileArray = array();
+        $allFileNames = scandir($dir);
+
+        foreach($allFileNames as $fileName)
+        {
+            if ($fileName != "." && $fileName != "..")
+            {
+                $filePath = $dir . DIRECTORY_SEPARATOR . $fileName;
+                if(is_dir($filePath))
+                {
+                    $fileArray[] = $filePath;
+                }
+            }
+        }
+
+        return $fileArray;
+    }
+
+    public static function getRecursiveFileList($filePath, $extends = array('.'))
+    {
+        $fileList = array();
+        if(is_dir($filePath))
+        {
+            $dp = dir($filePath);
+            while (false !== ($file = $dp->read()))
+            {
+                if($file !="." && $file !="..")
+                {
+                    $subFileList = self::getRecursiveFileList($filePath . DIRECTORY_SEPARATOR . $file, $extends);
+                    $fileList = array_merge($fileList, $subFileList);
+                }
+            }
+            $dp ->close();
+        }
+
+        if(is_file($filePath))
+        {
+            if(self::filterExtend($filePath, $extends))
+            {
+                $fileList[] = $filePath;
+            }
+        }
+
+        return $fileList;
+    }
+
+    private static function filterExtend($filePath, $extendArray)
+    {
+        foreach($extendArray as $extend)
+        {
+            if(strripos($filePath, $extend))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static function removeDir($path)
+    {
+        try
+        {
+            $op = dir($path);
+            $removeFlag = true;
+            while (false != ($item = $op->read()))
+            {
+                if ($item == '.' || $item == '..')
+                {
+                    continue;
+                }
+                $itemPath = $op->path . DIRECTORY_SEPARATOR . $item;
+                if (is_dir($itemPath))
+                {
+                    if(false === self::removeDir($itemPath))
+                    {
+                        $removeFlag = false;
+                        break;
+                    }
+                }
+                else
+                {
+                    if(false === unlink($itemPath))
+                    {
+                        ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_WARNING, 'Failed to delete file: ' . $itemPath);
+                        $removeFlag = false;
+                        break;
+                    }
+                }
+
+            }
+
+            if(false === $removeFlag)
+            {
+                $op->close();
+                return false;
+            }
+            else
+            {
+                if(false === rmdir($path))
+                {
+                    ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_WARNING, 'Failed to delete empty dir: ' . $path);
+                    $op->close();
+                    return false;
+                }
+                $op->close();
+                return true;
+            }
+        }
+        catch (\Exception $e)
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_WARNING, 'Failed to remorve dir: ' . $path);
+            return false;
+        }
+    }
+
+    public static function createDir($dirPath, $mode=0777, $recursive=false)
+    {
+        if(file_exists($dirPath))
+        {
+            return is_dir($dirPath);
+        }
+        else
+        {
+            return mkdir($dirPath, $mode, $recursive);
+        }
+    }
+
+    public static function writeFileContent($contentInfo, $filePath)
+    {
+        return file_put_contents($filePath, $contentInfo, FILE_APPEND);
+    }
+
+    public static function writeObjectInfo($instance, $filePath)
+    {
+        $contentInfo = print_r($instance, true);
+        file_put_contents($filePath, $contentInfo, FILE_APPEND);
+    }
+
+    public static function writeClassMethods($className, $filePath)
+    {
+        $methods = get_class_methods($className);
+        foreach ($methods as $method )
+        {
+            $methodFormat = $method . PHP_EOL;
+            file_put_contents($filePath, $methodFormat, FILE_APPEND);
+        }
+    }
+
+    public static function unzipFile($zipFile, $destinationPath)
+    {
+        $zip = new \ZipArchive;
+        $res = $zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        if(true === $res)
+        {
+            $unzipResult = $zip->extractTo($destinationPath);
+            $zip->close();
+            return $unzipResult;
+        }
+        else
+        {
+            ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'The unzip error code is ' . $res);
+            return false;
+        }
+    }
+}

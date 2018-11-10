@@ -1,0 +1,126 @@
+<?php
+namespace OrionService\Mock;
+
+use CommonMoudle\Service\ServiceResult;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/15
+ * Time: 下午3:21
+ */
+class MockService
+{
+   public function queryProductInfo($param)
+   {
+       $response = new ServiceResult();
+       $data = array(
+       array(
+           'id' => 1,
+           'name' => 'Opera Mini',
+           'advertiser' => '360 Security',
+           'imagePath' => './resources/logo/opera_mini.png',
+           'accountList' => array(10, 11, 52, 67)
+       ),
+       array(
+           'id' => 2,
+           'name' => 'Pola Camera',
+           'advertiser' => '360 Security',
+           'imagePath' => './resources/logo/pola_camera.png',
+           'accountList' => array(10, 11, 52, 67)
+       ),
+       array(
+           'id' => 3,
+           'name' => 'Kwai',
+           'advertiser' => '一笑科技',
+           'imagePath' => './resources/logo/kwai.png',
+           'accountList' => array(10, 11, 52, 67)
+       ));
+
+       $response->setData($data);
+       return $response;
+   }
+
+   public function getAccountInfoByProductId($param)
+   {
+       $response = new ServiceResult();
+       $accountInfo = array();
+       $accountInfo['title'] = self::$accountBasicTitle;
+       $data = array(
+           10 => array(
+               "act_001",
+               "act_name_001",
+               "blue",
+               290000,
+               289105.3
+           ),
+           11 => array(
+               "act_001",
+               "act_name_001",
+               "blue",
+               290000,
+               289105.3
+           ),
+           52 => array(
+               "act_001",
+               "act_name_001",
+               "blue",
+               290000,
+               289105.3
+           ),
+           67 => array(
+               "act_001",
+               "act_name_001",
+               "blue",
+               290000,
+               289105.3
+           )
+       );
+
+       $accountInfo['datas'] = $data;
+       $response->setData($accountInfo);
+
+       return $response;
+   }
+
+   public function getAccountCountryBDInsight($param)
+   {
+       $response = new ServiceResult();
+       $accountInfo = array();
+       $accountInfo['title'] = self::$accountPerformanceTitle;
+       $data = array(
+           10 => array(
+               "GH",
+               64,
+               24.69,
+               0.385781
+           ),
+           11 => array(
+               "ID",
+               64,
+               24.69,
+               0.385781
+           ),
+           52 => array(
+               "US",
+               64,
+               24.69,
+               0.385781
+           ),
+           67 => array(
+               "CH",
+               64,
+               24.69,
+               0.385781
+           )
+       );
+
+       $accountInfo['datas'] = $data;
+       $response->setData($accountInfo);
+
+       return $response;
+   }
+
+    private static $accountBasicTitle = array('ID', 'Name', 'Agency', 'Cap', 'Total spend');
+    private static $accountPerformanceTitle = array('Country', 'Install', 'Cost', 'CPI');
+}

@@ -1,0 +1,11 @@
+{
+  "requestParamMap":[
+    {
+      "orionProduct": {
+        "serviceName": "QueryOrionProductService",
+        "className": "\\DBService\\Business\\OrionBasicService",
+        "functionName": "getProductStateData"
+      }
+    }
+  ]
+}

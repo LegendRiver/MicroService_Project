@@ -1,0 +1,16 @@
+{
+  "serviceConfig":[
+    {
+      "serviceName": "MockService",
+      "classInfo": [
+        {
+          "className": "\\FBBasicService\\Mock\\MockService",
+          "functionList": [
+            "mockQueryAccountById",
+            "mockQueryAccountCountyBDInsight"
+          ]
+        }
+      ]
+    }
+  ]
+}

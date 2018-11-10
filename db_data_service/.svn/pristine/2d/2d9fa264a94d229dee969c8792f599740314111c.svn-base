@@ -1,0 +1,93 @@
+<?php
+namespace DBService\Business;
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Logger\ServerLogger;
+use CommonMoudle\Service\ServiceBase;
+use CommonMoudle\Service\ServiceResult;
+use DBService\Constant\ReactStateKeys;
+use DBService\DBField\OrionDB\ProductDBFields;
+use DBService\DBField\OrionDB\SelectAliasConstants;
+use DBService\Manager\OrionDB\AccountDBManager;
+use DBService\Manager\OrionDB\ProductDBManager;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/10
+ * Time: 下午1:48
+ */
+class OrionBasicService extends ServiceBase
+{
+    private $productDb;
+
+    private $accountDb;
+
+    public function __construct()
+    {
+        $this->productDb = new ProductDBManager();
+        $this->accountDb = new AccountDBManager();
+    }
+
+    public function getProductStateData()
+    {
+        $response = new ServiceResult();
+
+        $productStateList = array();
+        $productInfoList = $this->productDb->selectValidProduct();
+        if(empty($productInfoList))
+        {
+            return array();
+        }
+        //临时用用于过滤多平台情况，暂时只考虑FB
+        $productIdList = array();
+        foreach ($productInfoList as $product)
+        {
+            //先暂时不考虑google, 后面需要重构增加google account
+            $productId = $product[ProductDBFields::ID];
+            $productName = $product[SelectAliasConstants::PRODUCT_NAME];
+            $logoPath = $product[ProductDBFields::LOGO_PATH];
+            $advertiser = $product[SelectAliasConstants::ADVERTISER_NAME];
+
+            if(in_array($productId, $productIdList))
+            {
+                continue;
+            }
+
+            $accountList = $this->accountDb->selectAccountByProductId($productId);
+            if(false === $accountList)
+            {
+                ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, 'Failed to select account by productId: ' .
+                    $productId . '; productName: ' . $productName);
+                continue;
+            }
+
+            if(empty($accountList))
+            {
+                continue;
+            }
+
+            //没有考虑平台，目前只是FB
+            $productIdList[] = $productId;
+
+            $accountIdList = array();
+            foreach ($accountList as $account)
+            {
+                $accountIdList[] = $account->getId();
+            }
+
+            $productState = array(
+                ReactStateKeys::PRODUCT_ID => $productId,
+                ReactStateKeys::PRODUCT_NAME => $productName,
+                ReactStateKeys::PRODUCT_ADVERTISER => $advertiser,
+                ReactStateKeys::PRODUCT_LOGO_PATH => $logoPath,
+                ReactStateKeys::PRODUCT_ACCOUNT_LIST => $accountIdList,
+            );
+
+            $productStateList[$productId] = $productState;
+        }
+
+        $response->setData($productStateList);
+
+        return $response;
+    }
+}

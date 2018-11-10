@@ -1,0 +1,43 @@
+<?php
+namespace FBBasicService\Business;
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Service\ServiceBase;
+use FBBasicService\Common\FBLogger;
+use FBBasicService\Common\FBServiceResult;
+use FBBasicService\Constant\FBServiceStatusCode;
+use FBBasicService\Facade\AccountFacade;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/2
+ * Time: 下午8:59
+ */
+class FBNodeService extends ServiceBase
+{
+    public function queryAccountById($requestParam)
+    {
+        $response = new FBServiceResult();
+        if(!array_key_exists('accountId', $requestParam))
+        {
+            FBLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#queryAccount# There is not param: accountId');
+            $response->setErrorCode(FBServiceStatusCode::QUERY_PARAM_INCOMPLETE);
+            return $response;
+        }
+        $accountId = $requestParam['accountId'];
+        $accountEntity = AccountFacade::getAccountById($accountId);
+        if(false === $accountEntity)
+        {
+            $response->setErrorCode(FBServiceStatusCode::GET_FB_ACCOUNT_FAILED);
+            return $response;
+        }
+
+        $accountInfo = array();
+        $accountInfo['accountName'] = $accountEntity->getName();
+        $accountInfo['spendCap'] = $accountEntity->getSpendCap();
+        $accountInfo['spendAmount'] = $accountEntity->getAmountSpend();
+
+        $response->setData($accountInfo);
+        return $response;
+    }
+}

@@ -1,0 +1,34 @@
+{
+  "serviceConfig":[
+    {
+      "serviceName": "QueryNodeService",
+      "classInfo": [
+        {
+          "className": "\\FBBasicService\\Business\\FBNodeService",
+          "functionList": [
+            "queryAccountById",
+            "getAdType",
+            "getFirstAdId",
+            "getAdsetAllField",
+            "getCreativeAllFields",
+            "uploadVideo",
+            "uploadImage",
+            "createAdsetByField",
+            "duplicateAdset"
+          ]
+        }
+      ]
+    },
+    {
+      "serviceName": "QueryInsightService",
+      "classInfo": [
+        {
+          "className": "\\FBBasicService\\Business\\FBInsightService",
+          "functionList": [
+            "queryAccountCountryBDInsight"
+          ]
+        }
+      ]
+    }
+  ]
+}

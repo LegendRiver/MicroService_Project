@@ -1,0 +1,39 @@
+<?php
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
+
+use DuplicateAd\Business\CarouselCopyHelper;
+use DuplicateAd\FBManager\FBServiceFacade;
+use DuplicateAd\Business\DuplicateHandler;
+
+duplicateHandlerTest();
+
+function copyHelperTest()
+{
+    $copyHelper = new CarouselCopyHelper();
+}
+
+function getAdsetAllFieldTest()
+{
+//    $adsetId = '23842671908120758';
+//    $adsetField = FBServiceFacade::getAdsetAllField($adsetId);
+
+    $adId = '23842706987890192';
+    $adField = FBServiceFacade::getCreativeField($adId);
+    print_r($adField);
+
+}
+
+function getAdTypeTest()
+{
+    $adId = '23842744513020008';
+    $adType = FBServiceFacade::getAdType($adId);
+    print_r($adType);
+}
+
+function duplicateHandlerTest()
+{
+    $rootPath = '/Users/yuanyuan/Downloads/20180203_1';
+    $jsonFile = 'SinglePicture.json';
+    $handler = new DuplicateHandler($rootPath, $jsonFile);
+    $handler->duplicateAd();
+}

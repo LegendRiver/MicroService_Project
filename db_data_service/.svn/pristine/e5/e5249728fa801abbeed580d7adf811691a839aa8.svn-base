@@ -1,0 +1,21 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/18
+ * Time: 下午3:19
+ */
+
+namespace DBService\Common;
+
+
+use CommonMoudle\Service\ServiceResult;
+
+class OrionDBServiceResult extends ServiceResult
+{
+    protected function getSubMessage()
+    {
+        return array(
+        );
+    }
+}

@@ -1,0 +1,42 @@
+<?php
+
+namespace DBService\Business;
+
+use CommonMoudle\Service\ServiceBase;
+use DBService\Constant\ReactStateKeys;
+use DBService\Manager\OrionDB\UserDBManager;
+use DBService\Common\OrionDBServiceResult;
+use DBService\Constant\OrionDBStatusCode;
+
+class UserBasicService extends ServiceBase
+{
+	private $userDb;
+
+
+	public function __construct()
+	{
+		$this->userDb = new UserDBManager();
+	}
+
+	public function getUserData($param)
+	{
+		$response = new OrionDBServiceResult();
+
+		if(!array_key_exists('userName', $param))
+		{
+			$response->setErrorCode(OrionDBStatusCode::USER_NAME_EMPTY);
+			return $response;
+		}
+
+		$name = $param['userName'];
+		$db = new UserDBManager();
+		$result = $db->selectUserByName($name);
+		if(false === $result)
+		{
+			$response->setErrorCode(OrionDBStatusCode::SELECT_USER_NAME_FAIL);
+			return $response;
+		}
+		$response->setData($result);
+		return $response;
+	}
+}

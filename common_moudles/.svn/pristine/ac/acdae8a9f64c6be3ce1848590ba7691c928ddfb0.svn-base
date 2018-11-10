@@ -1,0 +1,8 @@
+{
+  "autoload": {
+    "psr-4": {
+      "CommonMoudle\\": "src/"
+    },
+    "files": ["third_lib/includeFile.php"]
+  }
+}

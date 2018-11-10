@@ -1,0 +1,16 @@
+<?php
+namespace OrionService\Common;
+
+use CommonMoudle\Service\ServiceResult;
+use OrionService\Constant\OrionServiceStateCode;
+
+class OrionServiceResult extends ServiceResult
+{
+    protected function getSubMessage()
+    {
+        return array(
+            OrionServiceStateCode::CHECK_TOKEN_FAILED => 'The token is invalid.',
+            OrionServiceStateCode::QUERY_PRODUCT_FAILED => 'Failed to query product by db service.'
+        );
+    }
+}

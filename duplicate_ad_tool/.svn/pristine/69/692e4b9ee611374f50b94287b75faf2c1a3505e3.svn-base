@@ -1,0 +1,78 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/2/6
+ * Time: 上午10:39
+ */
+
+namespace DuplicateAd\Business;
+
+
+use DuplicateAd\Constant\ConfConstant;
+use DuplicateAd\Constant\FBFieldConstant;
+
+class CarouselCopyHelper extends AbstractCopyHelper
+{
+    private $attachments;
+
+    private function getAttachment()
+    {
+        $storySpec = $this->temCreativeFields[FBFieldConstant::CREATIVE_OBJECT_STORY_SPEC];
+        if(array_key_exists(FBFieldConstant::STORY_LINK_DATA, $storySpec))
+        {
+            $linkData = $storySpec[FBFieldConstant::STORY_LINK_DATA];
+            if(array_key_exists(FBFieldConstant::LINK_CHILD_ATTACHMENTS, $linkData))
+            {
+                return $linkData[FBFieldConstant::LINK_CHILD_ATTACHMENTS];
+            }
+            else
+            {
+                return array();
+            }
+        }
+        else
+        {
+            return array();
+        }
+    }
+
+    protected function subReset()
+    {
+        $this->attachments = array();
+    }
+
+    protected function subInit()
+    {
+        $this->attachments = $this->getAttachment();
+    }
+
+    protected function constructTextMap()
+    {
+        $dirNameMap = array();
+        foreach ($this->originalTextInfo as $info)
+        {
+            $dirName = $info[0];
+            $imageName = $info[1];
+            $row = array(
+                ConfConstant::CSV_COL_DIR_NAME => $dirName,
+                ConfConstant::CSV_COL_IMAGE_NAME => $imageName,
+                ConfConstant::CSV_COL_MESSAGE => $info[2],
+                ConfConstant::CSV_COL_HEADLINE => $info[3],
+                ConfConstant::CSV_COL_DEEP_LINK => $info[4],
+            );
+
+            if(array_key_exists($dirName, $dirNameMap))
+            {
+                $dirNameMap[$dirName][$imageName] = $row;
+            }
+            else
+            {
+                $imageMap = array($imageName => $row);
+                $dirNameMap[$dirName] = $imageMap;
+            }
+        }
+
+        return $dirNameMap;
+    }
+}

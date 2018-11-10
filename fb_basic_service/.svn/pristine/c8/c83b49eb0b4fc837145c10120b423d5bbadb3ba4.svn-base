@@ -1,0 +1,27 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Feng
+ * Date: 2018/1/4
+ * Time: 上午11:52
+ */
+
+namespace FBBasicService\Common;
+
+
+use CommonMoudle\Service\ServiceResult;
+use FBBasicService\Constant\FBServiceStatusCode;
+
+class FBServiceResult extends ServiceResult
+{
+    protected function getSubMessage()
+    {
+        return array(
+            FBServiceStatusCode::GET_FB_ACCOUNT_FAILED => 'Failed to get account by fb api',
+            FBServiceStatusCode::QUERY_PARAM_INCOMPLETE => 'Incomplete request parameters',
+
+            FBServiceStatusCode::QUERY_INSIGHT_EMPTY => 'The insight of account is empty',
+            FBServiceStatusCode::FAILED_AD_TYPE => 'Failed to get ad type from facebook api',
+        );
+    }
+}

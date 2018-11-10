@@ -1,0 +1,82 @@
+<?php
+
+namespace DuplicateAd\DBManager;
+
+use CommonMoudle\Constant\LogConstant;
+use CommonMoudle\Helper\ServiceHelper;
+use CommonMoudle\Http\HttpClient;
+use CommonMoudle\Http\RequestInfo;
+use CommonMoudle\Logger\ServerLogger;
+use DuplicateAd\Constant\DAEndpointConstant;
+use DuplicateAd\Constant\RequestParamConstant;
+use DuplicateAd\Constant\DACommonConstant;
+
+class DBServiceFacade
+{
+	public static function getDuplicateTaskByStatus($status)
+	{
+		if(empty($status))
+		{
+			ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR,
+				'The param of status is empty, status: ' . $status . '.');
+			return false;
+		}
+		$queryParam = array(RequestParamConstant::DB_DATA_SERVICE_STATUS => $status);
+
+		$response = HttpClient::instance()->sendRequest(DACommonConstant::DB_SERVER_KEY1, RequestInfo::METHOD_GET,
+			DAEndpointConstant::QUERY_DUPLICATE_TASK_FIELD, $queryParam);
+
+		if(!ServiceHelper::checkResponse($response))
+		{
+			ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#getDuplicateTaskByStatus#Failed to check response');
+			return false;
+		}
+
+		$duplicateTask = ServiceHelper::getBodyData($response);
+		return $duplicateTask;
+	}
+
+	public static function updateDuplicateTaskById($taskName, $userId, $status, $rootPath, $jsonName, $id)
+	{
+		$postParam = [
+			RequestParamConstant::UPDATE_FIELD =>
+				[
+					RequestParamConstant::TASK_NAME,
+					RequestParamConstant::USER_ID,
+					RequestParamConstant::STATUS,
+					RequestParamConstant::ROOT_PATH,
+					RequestParamConstant::JSON_NAME,
+					RequestParamConstant::COMPLETE_TIME
+				],
+			RequestParamConstant::UPDATE_VALUE =>
+				[
+					$taskName,
+					$userId,
+					$status,
+					$rootPath,
+					$jsonName,
+					time()
+				],
+			RequestParamConstant::WHERE_FIELD =>
+				[
+					RequestParamConstant::ID
+				],
+			RequestParamConstant::WHERE_VALUE =>
+				[
+					$id
+				]
+		];
+
+		$response = HttpClient::instance()->sendRequest(DACommonConstant::DB_SERVER_KEY1, RequestInfo::METHOD_POST,
+			DAEndpointConstant::UPDATE_DUPLICATE_TASK_FIELD, array(), $postParam);
+
+		if(!ServiceHelper::checkResponse($response))
+		{
+			ServerLogger::instance()->writeLog(LogConstant::LOGGER_LEVEL_ERROR, '#updateDuplicateTaskByID#Failed to check response');
+			return false;
+		}
+
+		$duplicateTask = ServiceHelper::getBodyData($response);
+		return $duplicateTask;
+	}
+}

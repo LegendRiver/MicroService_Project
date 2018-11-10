@@ -1,0 +1,51 @@
+{
+  "serviceConfig":[
+    {
+      "serviceName": "OrionProductService",
+      "classInfo": [
+        {
+          "className": "\\OrionService\\Business\\ProductService",
+          "functionList": [
+            "queryValidProduct",
+            "queryAccountByProductId",
+            "queryAccountGeoInsight"
+          ]
+        }
+      ]
+    },
+    {
+      "serviceName": "OrionUserService",
+      "classInfo": [
+        {
+          "className": "\\OrionService\\Business\\UserAuthService",
+          "functionList": [
+            "validUser"
+          ]
+        }
+      ]
+    },
+    {
+      "serviceName": "UploadMaterialService",
+      "classInfo": [
+        {
+          "className": "\\OrionService\\Business\\UploadMaterialService",
+          "functionList": [
+            "receiveMaterialZip"
+          ]
+        }
+      ]
+    },
+    {
+      "serviceName": "DuplicateTaskService",
+      "classInfo": [
+        {
+          "className": "\\OrionService\\Business\\DuplicateTaskService",
+          "functionList": [
+            "selectTaskByUserId",
+            "duplicateTaskInsert"
+          ]
+        }
+      ]
+    }
+  ]
+}
